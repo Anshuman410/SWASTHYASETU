@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHealthcare } from '../../context/HealthcareContext';
+import { useAuth } from '../../context/AuthContext';
 import { StatCard } from '../../components/common/StatCard';
 import { RiskBadge } from '../../components/common/RiskBadge';
 import { StatusBadge } from '../../components/common/StatusBadge';
@@ -14,6 +15,7 @@ interface DoctorDashboardProps {
 
 export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) => {
   const { appointments, patients, referrals, followUps } = useHealthcare();
+  const { currentUser } = useAuth();
 
   return (
     <div className="space-y-6 animate-letter">
@@ -23,7 +25,7 @@ export const DoctorDashboard: React.FC<DoctorDashboardProps> = ({ onNavigate }) 
           <span className="text-[10px] font-black uppercase tracking-wider text-purple-800 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200">
             Senior Physician OPD & Specialist Console
           </span>
-          <h1 className="text-2xl font-black text-slate-900 mt-2">Good morning, Dr. Ramesh Sharma</h1>
+          <h1 className="text-2xl font-black text-slate-900 mt-2">Hi, {currentUser?.name ?? 'Doctor'}</h1>
           <p className="text-xs text-slate-600 mt-0.5">
             General Medicine & Cardiology • PHC Rampur & District Hospital Sitapur Node
           </p>

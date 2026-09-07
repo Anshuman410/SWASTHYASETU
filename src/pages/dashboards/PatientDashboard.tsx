@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHealthcare } from '../../context/HealthcareContext';
+import { useAuth } from '../../context/AuthContext';
 import { StatCard } from '../../components/common/StatCard';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import {
@@ -14,6 +15,7 @@ interface PatientDashboardProps {
 
 export const PatientDashboard: React.FC<PatientDashboardProps> = ({ onNavigate }) => {
   const { patients, appointments, referrals, followUps } = useHealthcare();
+  const { currentUser } = useAuth();
   const patient = patients[0]; // Primary Patient Rahul Kumar
   const nextAppointment = appointments[0] || null;
 
@@ -35,7 +37,7 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({ onNavigate }
       <div className="p-6 rounded-3xl bg-gradient-to-r from-emerald-800 via-health-700 to-teal-900 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
           <span className="text-xs font-bold px-3 py-1 bg-white/20 backdrop-blur-md rounded-full border border-white/30 text-emerald-100">
-            Welcome Back, Rahul Kumar
+            Hi, {currentUser?.name ?? 'Patient'}
           </span>
           <h1 className="text-2xl sm:text-3xl font-black text-white mt-2">“You are taking the next step toward better care.”</h1>
           <p className="text-xs text-emerald-100 mt-1">

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHealthcare } from '../../context/HealthcareContext';
+import { useAuth } from '../../context/AuthContext';
 import { StatCard } from '../../components/common/StatCard';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { RiskBadge } from '../../components/common/RiskBadge';
@@ -15,6 +16,7 @@ interface HealthWorkerDashboardProps {
 
 export const HealthWorkerDashboard: React.FC<HealthWorkerDashboardProps> = ({ onNavigate }) => {
   const { patients, referrals, followUps, registerPatient } = useHealthcare();
+  const { currentUser } = useAuth();
 
   const [showRegModal, setShowRegModal] = useState(false);
   const [name, setName] = useState('');
@@ -38,7 +40,7 @@ export const HealthWorkerDashboard: React.FC<HealthWorkerDashboardProps> = ({ on
           <span className="text-[10px] font-black uppercase tracking-wider text-sky-800 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200">
             ASHA / ANM Field Operations Console
           </span>
-          <h1 className="text-2xl font-black text-slate-900 mt-2">Good morning, Sunita Devi</h1>
+          <h1 className="text-2xl font-black text-slate-900 mt-2">Hi, {currentUser?.name ?? 'Health Worker'}</h1>
           <p className="text-xs text-slate-600 mt-0.5">
             Assigned Village Sector: Rampur Block • Sitapur District Zone
           </p>
