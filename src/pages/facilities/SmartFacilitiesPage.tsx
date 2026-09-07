@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHealthcare } from '../../context/HealthcareContext';
 import { LeafletMap } from '../../components/common/LeafletMap';
 import {
-  Hospital, MapPin, Clock, Stethoscope, Pill, FlaskConical,
+  Building2 as Hospital, MapPin, Clock, Stethoscope, Pill, FlaskConical,
   CheckCircle, Star, Filter, ArrowRight, Phone, ShieldCheck
 } from 'lucide-react';
 

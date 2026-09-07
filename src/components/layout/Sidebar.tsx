@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import {
-  Home, Users, Calendar, Stethoscope, Hospital, FlaskConical,
+  Home, Users, Calendar, Stethoscope, Building2 as Hospital, FlaskConical,
   Pill, ArrowRightLeft, CalendarCheck, FileHeart, ListOrdered,
   Video, CheckSquare, ShieldCheck, Settings, HeartPulse, ChevronLeft,
   UserPlus, BarChart3, HelpCircle

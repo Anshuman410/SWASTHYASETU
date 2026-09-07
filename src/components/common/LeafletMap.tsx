@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Facility } from '../../types';
-import { MapPin, Hospital, Navigation } from 'lucide-react';
+import { MapPin, Building2 as Hospital, Navigation } from 'lucide-react';
 
 interface LeafletMapProps {
   facilities: Facility[];

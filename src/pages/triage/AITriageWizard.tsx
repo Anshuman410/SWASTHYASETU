@@ -5,7 +5,7 @@ import { RiskBadge } from '../../components/common/RiskBadge';
 import { VoiceInputModal } from '../../components/common/VoiceInputModal';
 import {
   Stethoscope, Mic, Sparkles, AlertTriangle, ShieldCheck, ArrowRight,
-  CheckCircle2, RefreshCw, User, Activity, Heart, Hospital, ArrowRightLeft,
+  CheckCircle2, RefreshCw, User, Activity, Heart, Building2 as Hospital, ArrowRightLeft,
   Calendar, FileText, Search
 } from 'lucide-react';
 

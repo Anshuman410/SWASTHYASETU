@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHealthcare } from '../../context/HealthcareContext';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import {
-  Pill, Search, AlertTriangle, CheckCircle2, Hospital, Package,
+  Pill, Search, AlertTriangle, CheckCircle2, Building2 as Hospital, Package,
   RefreshCw, ShieldCheck
 } from 'lucide-react';
 

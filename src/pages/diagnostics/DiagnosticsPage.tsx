@@ -3,7 +3,7 @@ import { useHealthcare } from '../../context/HealthcareContext';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import {
   FlaskConical, CheckCircle2, Clock, Calendar, FileText,
-  Search, Plus, Hospital
+  Search, Plus, Building2 as Hospital
 } from 'lucide-react';
 
 interface DiagnosticsPageProps {

@@ -6,18 +6,14 @@ echo ==========================================
 :: Add Git to PATH for this session if not present
 set "PATH=C:\Program Files\Git\cmd;C:\Program Files\Git\bin;%PATH%"
 
-git init
-git branch -M main
-git remote remove origin 2>nul
-git remote add origin https://github.com/Anshuman410/SWASTHYASETU.git
 git add .
-git commit -m "Configure Render deployment and push SwasthyaSetu prototype"
-git push -u origin main
+git commit -m "Fix: Replace Hospital icon with Building2 alias for lucide-react v0.344.0 compatibility"
+git push origin main
 
 if errorlevel 1 (
     echo.
     echo Pushing failed. Attempting force push...
-    git push -u origin main --force
+    git push origin main --force
 )
 
 echo.

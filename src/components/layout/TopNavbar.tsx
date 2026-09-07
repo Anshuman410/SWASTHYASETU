@@ -5,7 +5,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { OfflineIndicator } from '../common/OfflineIndicator';
 import {
   Menu, Bell, Search, Globe, LogOut, UserCircle, Shield,
-  CheckCircle, Sparkles, X, Activity, User, Hospital, FileText
+  CheckCircle, Sparkles, X, Activity, User, Building2 as Hospital, FileText
 } from 'lucide-react';
 import { UserRole } from '../../types';
 

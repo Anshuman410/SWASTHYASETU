@@ -3,7 +3,7 @@ import { useHealthcare } from '../../context/HealthcareContext';
 import { StatCard } from '../../components/common/StatCard';
 import { LeafletMap } from '../../components/common/LeafletMap';
 import {
-  BarChart3, Users, Hospital, ArrowRightLeft, CalendarCheck, Clock,
+  BarChart3, Users, Building2 as Hospital, ArrowRightLeft, CalendarCheck, Clock,
   AlertTriangle, ShieldCheck, TrendingUp, Activity, Pill
 } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line, CartesianGrid } from 'recharts';

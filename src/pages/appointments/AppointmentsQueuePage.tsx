@@ -3,7 +3,7 @@ import { useHealthcare } from '../../context/HealthcareContext';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import { Modal } from '../../components/common/Modal';
 import {
-  Calendar, Clock, User, Hospital, Ticket, ArrowRight,
+  Calendar, Clock, User, Building2 as Hospital, Ticket, ArrowRight,
   Volume2, CheckCircle2, AlertCircle, Plus, ChevronRight
 } from 'lucide-react';
 

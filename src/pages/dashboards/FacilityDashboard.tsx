@@ -3,7 +3,7 @@ import { useHealthcare } from '../../context/HealthcareContext';
 import { StatCard } from '../../components/common/StatCard';
 import { StatusBadge } from '../../components/common/StatusBadge';
 import {
-  Hospital, Users, Clock, Pill, FlaskConical, ArrowRightLeft,
+  Building2 as Hospital, Users, Clock, Pill, FlaskConical, ArrowRightLeft,
   Volume2, CheckCircle2, AlertTriangle, Stethoscope
 } from 'lucide-react';
 

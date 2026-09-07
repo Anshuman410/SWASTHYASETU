@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useHealthcare } from '../../context/HealthcareContext';
 import { useOffline } from '../../context/OfflineContext';
 import {
-  Play, ChevronRight, Sparkles, CheckCircle2, Stethoscope, Hospital,
+  Play, ChevronRight, Sparkles, CheckCircle2, Stethoscope, Building2 as Hospital,
   ArrowRightLeft, User, HeartPulse, Video, Pill, FlaskConical, CalendarCheck,
   Wifi, RefreshCw, X
 } from 'lucide-react';

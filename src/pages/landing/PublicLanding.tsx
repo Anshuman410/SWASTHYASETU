@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  HeartPulse, Stethoscope, Hospital, UserCheck, ArrowRight, ShieldCheck,
+  HeartPulse, Stethoscope, Building2 as Hospital, UserCheck, ArrowRight, ShieldCheck,
   WifiOff, Languages, ArrowRightLeft, CalendarCheck, FileHeart, Sparkles,
   Play, Clock, MapPin, CheckCircle, Activity, ChevronRight
 } from 'lucide-react';
