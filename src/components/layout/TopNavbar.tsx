@@ -196,6 +196,14 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                       onClick={() => {
                         switchRole(r);
                         setShowProfileMenu(false);
+                        const dashboardRoutes: Record<string, string> = {
+                          'patient': '/patient/dashboard',
+                          'health-worker': '/health-worker/dashboard',
+                          'doctor': '/doctor/dashboard',
+                          'facility': '/facility/dashboard',
+                          'admin': '/admin/dashboard',
+                        };
+                        onNavigate?.(dashboardRoutes[r] ?? '/');
                       }}
                       className={`w-full text-left px-2 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors ${
                         currentRole === r ? 'bg-health-100 text-health-900 font-bold' : 'hover:bg-slate-100 text-slate-700'

@@ -3,11 +3,10 @@ echo ==========================================
 echo   Pushing SWASTHYASETU to GitHub
 echo ==========================================
 
-:: Add Git to PATH for this session if not present
 set "PATH=C:\Program Files\Git\cmd;C:\Program Files\Git\bin;%PATH%"
 
 git add .
-git commit -m "Fix: Dynamic user names in dashboards, replace Good morning with Hi"
+git commit -m "Fix: Navigate to correct dashboard URL on role switch"
 git push origin main
 
 if errorlevel 1 (
