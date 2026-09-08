@@ -1,12 +1,12 @@
 @echo off
 echo ==========================================
-echo   Pushing SWASTHYASETU Fix to GitHub
+echo   Pushing SWASTHYASETU Updates to GitHub
 echo ==========================================
 
 set "PATH=C:\Program Files\Git\cmd;C:\Program Files\Git\bin;%PATH%"
 
 git add .
-git commit -m "Fix: Ensure Modal displays in full viewport with smooth scrolling and no overflow clipping"
+git commit -m "UI: Make Register Patient form modal significantly wider and spacious with 2xl size and improved paddings"
 git push origin main
 
 if errorlevel 1 (
