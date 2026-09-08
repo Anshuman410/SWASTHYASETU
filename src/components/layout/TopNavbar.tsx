@@ -22,7 +22,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   onOpenSyncCenter,
   onNavigate
 }) => {
-  const { currentUser, currentRole, switchRole, logout } = useAuth();
+  const { currentUser, currentRole, logout } = useAuth();
   const { notifications, markNotificationRead, patients, facilities } = useHealthcare();
   const { language, setLanguage, t } = useLanguage();
 
@@ -186,33 +186,12 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                 </span>
               </div>
 
-              {/* Quick Role Switcher for Hackathon Judges */}
-              <div className="py-2 border-t border-b border-slate-100 my-1">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1.5 px-2">Quick Role Switch (Demo):</p>
-                <div className="space-y-1">
-                  {(['patient', 'health-worker', 'doctor', 'facility', 'admin'] as UserRole[]).map(r => (
-                    <button
-                      key={r}
-                      onClick={() => {
-                        switchRole(r);
-                        setShowProfileMenu(false);
-                        const dashboardRoutes: Record<string, string> = {
-                          'patient': '/patient/dashboard',
-                          'health-worker': '/health-worker/dashboard',
-                          'doctor': '/doctor/dashboard',
-                          'facility': '/facility/dashboard',
-                          'admin': '/admin/dashboard',
-                        };
-                        onNavigate?.(dashboardRoutes[r] ?? '/');
-                      }}
-                      className={`w-full text-left px-2 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between transition-colors ${
-                        currentRole === r ? 'bg-health-100 text-health-900 font-bold' : 'hover:bg-slate-100 text-slate-700'
-                      }`}
-                    >
-                      <span>{roleLabels[r]}</span>
-                      {currentRole === r && <CheckCircle className="w-3.5 h-3.5 text-health-700" />}
-                    </button>
-                  ))}
+              {/* User Account Info */}
+              <div className="py-2 border-b border-slate-100 mb-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2">Account Status</p>
+                <div className="px-2 py-1 flex items-center justify-between text-xs text-slate-600">
+                  <span>Role Permission</span>
+                  <span className="font-semibold text-emerald-700">Verified Active</span>
                 </div>
               </div>
 
@@ -220,8 +199,9 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                 onClick={() => {
                   logout();
                   setShowProfileMenu(false);
+                  onNavigate?.('/login');
                 }}
-                className="w-full text-left px-2 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl flex items-center gap-2 mt-1"
+                className="w-full text-left px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-xl flex items-center gap-2 cursor-pointer transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Sign Out</span>

@@ -27,6 +27,12 @@ interface HealthcareContextType {
   setSelectedPatientId: (id: string) => void;
   // Actions
   registerPatient: (patientData: Partial<Patient>) => Patient;
+  addDoctor: (doctorData: Omit<Doctor, 'id'>, password?: string) => Doctor;
+  removeDoctor: (id: string) => void;
+  addFacility: (facilityData: Omit<Facility, 'id'>) => Facility;
+  removeFacility: (id: string) => void;
+  addWorkerOrStaff: (userData: { name: string; email: string; phone: string; password?: string; role: 'health-worker' | 'facility'; assignedVillage?: string; facilityId?: string }) => void;
+  removeWorkerOrStaff: (id: string) => void;
   runAITriage: (patientId: string, symptoms: string[], vitals: Vitals, history: string[]) => AITriageRecord;
   createReferral: (patientId: string, destFacilityId: string, reason: string, urgency: RiskLevel) => Referral;
   updateReferralStatus: (referralId: string, newStatus: ReferralStatus, updatedBy: string, notes?: string) => void;
@@ -47,8 +53,15 @@ export const HealthcareProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     return saved ? JSON.parse(saved) : initialPatients;
   });
 
-  const [facilities] = useState<Facility[]>(initialFacilities);
-  const [doctors] = useState<Doctor[]>(initialDoctors);
+  const [facilities, setFacilities] = useState<Facility[]>(() => {
+    const saved = localStorage.getItem('swasthya_facilities');
+    return saved ? JSON.parse(saved) : initialFacilities;
+  });
+
+  const [doctors, setDoctors] = useState<Doctor[]>(() => {
+    const saved = localStorage.getItem('swasthya_doctors');
+    return saved ? JSON.parse(saved) : initialDoctors;
+  });
   
   const [appointments, setAppointments] = useState<Appointment[]>(() => {
     const saved = localStorage.getItem('swasthya_appointments');
@@ -92,6 +105,8 @@ export const HealthcareProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Synchronize state changes to localStorage
   useEffect(() => { localStorage.setItem('swasthya_patients', JSON.stringify(patients)); }, [patients]);
+  useEffect(() => { localStorage.setItem('swasthya_facilities', JSON.stringify(facilities)); }, [facilities]);
+  useEffect(() => { localStorage.setItem('swasthya_doctors', JSON.stringify(doctors)); }, [doctors]);
   useEffect(() => { localStorage.setItem('swasthya_appointments', JSON.stringify(appointments)); }, [appointments]);
   useEffect(() => { localStorage.setItem('swasthya_referrals', JSON.stringify(referrals)); }, [referrals]);
   useEffect(() => { localStorage.setItem('swasthya_followups', JSON.stringify(followUps)); }, [followUps]);
@@ -113,18 +128,123 @@ export const HealthcareProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setAuditLogs(prev => [newLog, ...prev]);
   };
 
+  const addDoctor = (doctorData: Omit<Doctor, 'id'>, password?: string): Doctor => {
+    const newDoctor: Doctor = {
+      id: `doc-${Date.now().toString().slice(-4)}`,
+      ...doctorData
+    };
+    setDoctors(prev => [...prev, newDoctor]);
+    addAuditLog('Admin', 'admin', 'Registered New Doctor', `${newDoctor.name} (${newDoctor.specialty}) at ${newDoctor.facilityName}`);
+
+    // Also register user account in user database
+    try {
+      const savedUsers = localStorage.getItem('swasthya_users_db');
+      const userList = savedUsers ? JSON.parse(savedUsers) : [];
+      const newUser = {
+        id: `usr-${newDoctor.id}`,
+        name: newDoctor.name,
+        email: newDoctor.email || `${newDoctor.name.toLowerCase().replace(/[^a-z0-9]/g, '')}@swasthyasetu.ac.in`,
+        phone: newDoctor.phone,
+        password: password || 'doctor@123',
+        role: 'doctor',
+        facilityId: newDoctor.facilityId
+      };
+      userList.push(newUser);
+      localStorage.setItem('swasthya_users_db', JSON.stringify(userList));
+    } catch (e) {
+      console.error(e);
+    }
+
+    return newDoctor;
+  };
+
+  const removeDoctor = (id: string) => {
+    const doc = doctors.find(d => d.id === id);
+    setDoctors(prev => prev.filter(d => d.id !== id));
+    addAuditLog('Admin', 'admin', 'Removed Doctor', doc ? doc.name : id);
+
+    // Also remove from user database
+    try {
+      const savedUsers = localStorage.getItem('swasthya_users_db');
+      if (savedUsers) {
+        const userList = JSON.parse(savedUsers);
+        const filtered = userList.filter((u: any) => u.id !== `usr-${id}` && u.email !== doc?.email);
+        localStorage.setItem('swasthya_users_db', JSON.stringify(filtered));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const addFacility = (facilityData: Omit<Facility, 'id'>): Facility => {
+    const newFacility: Facility = {
+      id: `fac-${Date.now().toString().slice(-4)}`,
+      ...facilityData
+    };
+    setFacilities(prev => [...prev, newFacility]);
+    addAuditLog('Admin', 'admin', 'Registered New Facility', `${newFacility.name} (${newFacility.type}) in ${newFacility.villageBlock}`);
+    return newFacility;
+  };
+
+  const removeFacility = (id: string) => {
+    const fac = facilities.find(f => f.id === id);
+    setFacilities(prev => prev.filter(f => f.id !== id));
+    addAuditLog('Admin', 'admin', 'Removed Facility', fac ? fac.name : id);
+  };
+
+  const addWorkerOrStaff = (userData: { name: string; email: string; phone: string; password?: string; role: 'health-worker' | 'facility'; assignedVillage?: string; facilityId?: string }) => {
+    try {
+      const savedUsers = localStorage.getItem('swasthya_users_db');
+      const userList = savedUsers ? JSON.parse(savedUsers) : [];
+      const newUser = {
+        id: `usr-${Date.now().toString().slice(-4)}`,
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone,
+        password: userData.password || (userData.role === 'health-worker' ? 'asha@123' : 'facility@123'),
+        role: userData.role,
+        assignedVillage: userData.assignedVillage,
+        facilityId: userData.facilityId
+      };
+      userList.push(newUser);
+      localStorage.setItem('swasthya_users_db', JSON.stringify(userList));
+      addAuditLog('Admin', 'admin', `Registered New ${userData.role === 'health-worker' ? 'ASHA Worker' : 'Facility Staff'}`, `${userData.name} (${userData.email})`);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const removeWorkerOrStaff = (id: string) => {
+    try {
+      const savedUsers = localStorage.getItem('swasthya_users_db');
+      if (savedUsers) {
+        const userList = JSON.parse(savedUsers);
+        const target = userList.find((u: any) => u.id === id || u.email === id);
+        const filtered = userList.filter((u: any) => u.id !== id && u.email !== id);
+        localStorage.setItem('swasthya_users_db', JSON.stringify(filtered));
+        addAuditLog('Admin', 'admin', 'Removed Staff/Worker', target ? target.name : id);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const registerPatient = (patientData: Partial<Patient>): Patient => {
     const newPatient: Patient = {
       id: `pt-${Date.now().toString().slice(-4)}`,
       abhaId: `ABHA-9821-4432-${Math.floor(1000 + Math.random() * 9000)}`,
       name: patientData.name || 'New Patient',
+      email: patientData.email,
+      password: patientData.password || 'rahul 123',
       age: patientData.age || 30,
       gender: patientData.gender || 'Male',
       phone: patientData.phone || '+91 90000 00000',
+      bloodGroup: patientData.bloodGroup || 'B+',
+      emergencyContact: patientData.emergencyContact || '',
       village: patientData.village || 'Rampur',
       block: patientData.block || 'Rampur Block',
-      district: 'Sitapur',
-      assignedHealthWorker: 'Sunita Devi (ASHA)',
+      district: patientData.district || 'Sitapur',
+      assignedHealthWorker: patientData.assignedHealthWorker || 'Sunita Devi (ASHA)',
       riskLevel: 'LOW',
       registeredDate: new Date().toISOString().split('T')[0],
       currentMedicines: [],
@@ -136,7 +256,34 @@ export const HealthcareProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }]
     };
     setPatients(prev => [newPatient, ...prev]);
-    addAuditLog('Sunita Devi (ASHA)', 'health-worker', 'Registered New Patient', `Patient ${newPatient.name} (${newPatient.abhaId})`);
+    addAuditLog('Frontline Worker', 'health-worker', 'Registered New Patient', `Patient ${newPatient.name} (${newPatient.abhaId})`);
+
+    // Create user login account for patient so they can sign in!
+    if (newPatient.email) {
+      try {
+        const savedUsers = localStorage.getItem('swasthya_users_db');
+        const userList = savedUsers ? JSON.parse(savedUsers) : [];
+        const existingIdx = userList.findIndex((u: any) => u.email.toLowerCase() === newPatient.email!.toLowerCase());
+        const patientUser = {
+          id: `usr-${newPatient.id}`,
+          name: newPatient.name,
+          email: newPatient.email,
+          phone: newPatient.phone,
+          password: newPatient.password || 'rahul 123',
+          role: 'patient',
+          assignedVillage: newPatient.village
+        };
+        if (existingIdx >= 0) {
+          userList[existingIdx] = patientUser;
+        } else {
+          userList.push(patientUser);
+        }
+        localStorage.setItem('swasthya_users_db', JSON.stringify(userList));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     return newPatient;
   };
 
@@ -376,6 +523,12 @@ export const HealthcareProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       selectedPatientId,
       setSelectedPatientId,
       registerPatient,
+      addDoctor,
+      removeDoctor,
+      addFacility,
+      removeFacility,
+      addWorkerOrStaff,
+      removeWorkerOrStaff,
       runAITriage,
       createReferral,
       updateReferralStatus,

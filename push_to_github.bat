@@ -1,12 +1,12 @@
 @echo off
 echo ==========================================
-echo   Pushing SWASTHYASETU to GitHub
+echo   Pushing SWASTHYASETU Overhaul to GitHub
 echo ==========================================
 
 set "PATH=C:\Program Files\Git\cmd;C:\Program Files\Git\bin;%PATH%"
 
 git add .
-git commit -m "Fix: Navigate to correct dashboard URL on role switch"
+git commit -m "Feat: Complete production overhaul - real auth, admin CRUD, appointments, voice AI, custom logo"
 git push origin main
 
 if errorlevel 1 (

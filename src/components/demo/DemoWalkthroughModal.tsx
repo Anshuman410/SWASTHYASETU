@@ -44,7 +44,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
   onClose,
   onNavigate
 }) => {
-  const { switchRole } = useAuth();
+  const { users, loginWithCredentials } = useAuth();
   const { toggleOfflineMode, triggerSync } = useOffline();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
@@ -52,10 +52,17 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
 
   const currentStep = demoSteps[currentStepIndex];
 
+  const switchUserForRole = (roleName: string) => {
+    const targetUser = users.find(u => u.role === roleName) || users[0];
+    if (targetUser && targetUser.password) {
+      loginWithCredentials(targetUser.email, targetUser.password);
+    }
+  };
+
   const handleNextStep = () => {
     if (currentStepIndex < demoSteps.length - 1) {
       const next = demoSteps[currentStepIndex + 1];
-      switchRole(next.role as any);
+      switchUserForRole(next.role);
       onNavigate(next.route);
       setCurrentStepIndex(prev => prev + 1);
     } else {
@@ -66,7 +73,7 @@ export const DemoWalkthroughModal: React.FC<DemoWalkthroughModalProps> = ({
   const handlePrevStep = () => {
     if (currentStepIndex > 0) {
       const prev = demoSteps[currentStepIndex - 1];
-      switchRole(prev.role as any);
+      switchUserForRole(prev.role);
       onNavigate(prev.route);
       setCurrentStepIndex(prev => prev - 1);
     }

@@ -134,21 +134,19 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({ onNavigate }
       {/* Quick Action Grid */}
       <div className="p-6 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-4">
         <h3 className="text-base font-bold text-slate-900">Quick Patient Services</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { label: 'Book Appointment', route: '/patient/appointments', icon: Calendar, color: 'bg-emerald-50 text-emerald-800' },
             { label: 'Find Smart Facility', route: '/facilities', icon: Hospital, color: 'bg-sky-50 text-sky-800' },
             { label: 'My Health Record', route: '/patient/records', icon: FileHeart, color: 'bg-purple-50 text-purple-800' },
-            { label: 'Medicine Stock', route: '/medicines', icon: Pill, color: 'bg-amber-50 text-amber-800' },
-            { label: 'Track Referrals', route: '/referrals', icon: ArrowRightLeft, color: 'bg-rose-50 text-rose-800' },
-            { label: 'Follow-ups', route: '/follow-ups', icon: CalendarCheck, color: 'bg-teal-50 text-teal-800' }
+            { label: 'Track Referrals', route: '/referrals', icon: ArrowRightLeft, color: 'bg-rose-50 text-rose-800' }
           ].map((act, i) => {
             const Icon = act.icon;
             return (
               <button
                 key={i}
                 onClick={() => onNavigate(act.route)}
-                className={`p-4 rounded-2xl border border-slate-200 hover:border-slate-300 text-center flex flex-col items-center justify-center space-y-2 transition-all hover:-translate-y-0.5 shadow-card hover:shadow-card-hover ${act.color}`}
+                className={`p-4 rounded-2xl border border-slate-200 hover:border-slate-300 text-center flex flex-col items-center justify-center space-y-2 transition-all hover:-translate-y-0.5 shadow-card hover:shadow-card-hover cursor-pointer ${act.color}`}
               >
                 <Icon className="w-6 h-6" />
                 <span className="text-xs font-bold leading-tight">{act.label}</span>

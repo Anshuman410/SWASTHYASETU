@@ -15,6 +15,7 @@ import { AdminDashboard } from './pages/dashboards/AdminDashboard';
 import { AITriageWizard } from './pages/triage/AITriageWizard';
 import { SmartFacilitiesPage } from './pages/facilities/SmartFacilitiesPage';
 import { AppointmentsQueuePage } from './pages/appointments/AppointmentsQueuePage';
+import { BookAppointmentPage } from './pages/appointments/BookAppointmentPage';
 import { DoctorPatientWorkspace } from './pages/doctor/DoctorPatientWorkspace';
 import { TeleconsultationPage } from './pages/doctor/TeleconsultationPage';
 import { ClosedLoopReferralPage } from './pages/referrals/ClosedLoopReferralPage';
@@ -108,6 +109,8 @@ const MainRouter: React.FC = () => {
         return <SmartFacilitiesPage onNavigate={navigate} />;
       case '/appointments':
         return <AppointmentsQueuePage onNavigate={navigate} />;
+      case '/patient/appointments':
+        return <BookAppointmentPage onNavigate={navigate} />;
       case '/doctor/patient/pt-101':
       case '/doctor/patient/pt-102':
       case '/doctor/patient/pt-103':
@@ -155,6 +158,7 @@ const MainRouter: React.FC = () => {
     '/triage': 'AI-Assisted Patient Triage',
     '/facilities': 'Smart Facility Matcher',
     '/appointments': 'Appointments & Token Queue',
+    '/patient/appointments': 'Book Doctor OPD Appointment',
     '/referrals': 'Closed-Loop Referral Engine',
     '/follow-ups': 'Follow-Up & High Risk Pathways',
     '/diagnostics': 'Diagnostic Center',

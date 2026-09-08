@@ -8,7 +8,8 @@ export const initialUsers: User[] = [
   {
     id: 'usr-patient-1',
     name: 'Rahul Kumar',
-    email: 'rahul.kumar@example.com',
+    email: 'patient-rahul@gmail.com',
+    password: 'rahul 123',
     phone: '+91 98765 43210',
     role: 'patient',
     assignedVillage: 'Rampur'
@@ -16,7 +17,8 @@ export const initialUsers: User[] = [
   {
     id: 'usr-hw-1',
     name: 'Sunita Devi (ASHA)',
-    email: 'sunita.asha@swasthya.gov.in',
+    email: 'asha@swasthyasetu.ac.in',
+    password: 'asha@123',
     phone: '+91 98123 45678',
     role: 'health-worker',
     facilityId: 'fac-1',
@@ -25,7 +27,8 @@ export const initialUsers: User[] = [
   {
     id: 'usr-doc-1',
     name: 'Dr. Ramesh Sharma',
-    email: 'dr.sharma@swasthya.gov.in',
+    email: 'doctor@swasthyasetu.ac.in',
+    password: 'doctor@123',
     phone: '+91 99887 76655',
     role: 'doctor',
     facilityId: 'fac-1'
@@ -33,15 +36,17 @@ export const initialUsers: User[] = [
   {
     id: 'usr-fac-1',
     name: 'PHC Rampur Desk',
-    email: 'desk.rampur@swasthya.gov.in',
+    email: 'facility@swasthyasetu.ac.in',
+    password: 'facility@123',
     phone: '+91 91122 33445',
     role: 'facility',
     facilityId: 'fac-1'
   },
   {
     id: 'usr-admin-1',
-    name: 'Dr. Vikramaditya (DHO Sitapur)',
-    email: 'dho.sitapur@swasthya.gov.in',
+    name: 'Admin',
+    email: 'admin@swasthyasetu.ac.in',
+    password: 'admin@123',
     phone: '+91 94433 22110',
     role: 'admin'
   }

@@ -4,24 +4,33 @@ import { initialUsers } from '../data/seedData';
 
 interface AuthContextType {
   currentUser: User | null;
-  currentRole: UserRole;
-  loginAsDemoUser: (role: UserRole) => void;
-  loginWithCredentials: (emailOrPhone: string, pass: string, role: UserRole) => boolean;
+  currentRole: UserRole | null;
+  users: User[];
+  loginWithCredentials: (emailOrPhone: string, pass: string) => User | null;
   logout: () => void;
-  switchRole: (role: UserRole) => void;
+  registerUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('swasthya_user');
-    return saved ? JSON.parse(saved) : initialUsers[1]; // Default to Health Worker Sunita Devi for easy demo
+  const [users, setUsers] = useState<User[]>(() => {
+    const saved = localStorage.getItem('swasthya_users_db');
+    return saved ? JSON.parse(saved) : initialUsers;
   });
 
-  const [currentRole, setCurrentRole] = useState<UserRole>(() => {
-    return currentUser ? currentUser.role : 'health-worker';
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('swasthya_user');
+    return saved ? JSON.parse(saved) : null;
   });
+
+  const [currentRole, setCurrentRole] = useState<UserRole | null>(() => {
+    return currentUser ? currentUser.role : null;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('swasthya_users_db', JSON.stringify(users));
+  }, [users]);
 
   useEffect(() => {
     if (currentUser) {
@@ -29,41 +38,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setCurrentRole(currentUser.role);
     } else {
       localStorage.removeItem('swasthya_user');
+      setCurrentRole(null);
     }
   }, [currentUser]);
 
-  const loginAsDemoUser = (role: UserRole) => {
-    const found = initialUsers.find(u => u.role === role) || {
-      id: `usr-demo-${role}`,
-      name: `Demo ${role.toUpperCase()} User`,
-      email: `${role}@swasthya.gov.in`,
-      phone: '+91 90000 00000',
-      role: role
-    };
-    setCurrentUser(found);
+  const loginWithCredentials = (emailOrPhone: string, pass: string): User | null => {
+    const found = users.find(u => 
+      (u.email.toLowerCase() === emailOrPhone.toLowerCase() || u.phone === emailOrPhone) &&
+      u.password === pass
+    );
+
+    if (found) {
+      setCurrentUser(found);
+      return found;
+    }
+    return null;
   };
 
-  const loginWithCredentials = (emailOrPhone: string, pass: string, role: UserRole): boolean => {
-    loginAsDemoUser(role);
-    return true;
+  const registerUser = (user: User) => {
+    setUsers(prev => [...prev, user]);
   };
 
   const logout = () => {
     setCurrentUser(null);
   };
 
-  const switchRole = (role: UserRole) => {
-    loginAsDemoUser(role);
-  };
-
   return (
     <AuthContext.Provider value={{
       currentUser,
       currentRole,
-      loginAsDemoUser,
+      users,
       loginWithCredentials,
       logout,
-      switchRole
+      registerUser
     }}>
       {children}
     </AuthContext.Provider>

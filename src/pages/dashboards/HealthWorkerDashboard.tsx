@@ -20,16 +20,33 @@ export const HealthWorkerDashboard: React.FC<HealthWorkerDashboardProps> = ({ on
 
   const [showRegModal, setShowRegModal] = useState(false);
   const [name, setName] = useState('');
-  const [age, setAge] = useState(30);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('rahul 123');
+  const [age, setAge] = useState(28);
   const [gender, setGender] = useState<'Male' | 'Female' | 'Other'>('Male');
   const [phone, setPhone] = useState('+91 ');
   const [village, setVillage] = useState('Rampur');
+  const [bloodGroup, setBloodGroup] = useState('B+');
+  const [emergencyContact, setEmergencyContact] = useState('+91 ');
 
   const handleRegisterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    registerPatient({ name, age, gender, phone, village });
+    registerPatient({ 
+      name, 
+      email: email.trim() || undefined, 
+      password: password.trim() || 'rahul 123',
+      age, 
+      gender, 
+      phone, 
+      village,
+      bloodGroup,
+      emergencyContact,
+      assignedHealthWorker: currentUser?.name || 'Sunita Devi (ASHA)'
+    });
     setShowRegModal(false);
     setName('');
+    setEmail('');
+    setPhone('+91 ');
   };
 
   return (
@@ -208,58 +225,122 @@ export const HealthWorkerDashboard: React.FC<HealthWorkerDashboardProps> = ({ on
         </div>
       </div>
 
-      {/* Quick Patient Registration Modal */}
+      {/* Patient Registration Modal */}
       <Modal
         isOpen={showRegModal}
         onClose={() => setShowRegModal(false)}
-        title="Register New Patient (Field ASHA Form)"
-        subtitle="Generates synthetic ABHA ID and assigns village sector record"
-        maxWidth="md"
+        title="Register New Patient"
+        subtitle="Create digital health profile and login credentials for patient"
+        maxWidth="lg"
       >
         <form onSubmit={handleRegisterSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Full Patient Name</label>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Full Patient Name</label>
             <input
               type="text"
               required
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="e.g. Laxmi Devi"
-              className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none"
+              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-health-500/20 focus:outline-none"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Age</label>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Patient Email (For Login)</label>
               <input
-                type="number"
-                value={age}
-                onChange={e => setAge(Number(e.target.value))}
-                className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+                type="email"
+                placeholder="e.g. laxmi@gmail.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-health-500/20 focus:outline-none"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Gender</label>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Patient Password</label>
+              <input
+                type="text"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-health-500/20 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Age</label>
+              <input
+                type="number"
+                min="1"
+                max="120"
+                value={age}
+                onChange={e => setAge(Number(e.target.value))}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-health-500/20 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Gender</label>
               <select
                 value={gender}
                 onChange={e => setGender(e.target.value as any)}
-                className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium bg-slate-50"
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl font-semibold bg-white focus:ring-2 focus:ring-health-500/20 focus:outline-none"
               >
                 <option value="Female">Female</option>
                 <option value="Male">Male</option>
                 <option value="Other">Other</option>
               </select>
             </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Blood Group</label>
+              <select
+                value={bloodGroup}
+                onChange={e => setBloodGroup(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl font-semibold bg-white focus:ring-2 focus:ring-health-500/20 focus:outline-none"
+              >
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Mobile Contact</label>
+              <input
+                type="text"
+                value={phone}
+                onChange={e => setPhone(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-health-500/20 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Emergency Contact</label>
+              <input
+                type="text"
+                placeholder="Relative / Guardian phone"
+                value={emergencyContact}
+                onChange={e => setEmergencyContact(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-health-500/20 focus:outline-none"
+              />
+            </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Mobile Contact</label>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Village / Sector</label>
             <input
               type="text"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-              className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium"
+              value={village}
+              onChange={e => setVillage(e.target.value)}
+              placeholder="e.g. Rampur"
+              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-xl font-medium focus:ring-2 focus:ring-health-500/20 focus:outline-none"
             />
           </div>
 
@@ -267,15 +348,15 @@ export const HealthWorkerDashboard: React.FC<HealthWorkerDashboardProps> = ({ on
             <button
               type="button"
               onClick={() => setShowRegModal(false)}
-              className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600"
+              className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-health-700 hover:bg-health-800 text-white font-bold text-xs shadow-md"
+              className="px-5 py-2.5 rounded-xl bg-health-700 hover:bg-health-800 text-white font-bold text-xs shadow-md cursor-pointer transition-colors"
             >
-              Register & Assign ABHA
+              Register Patient & Create Account
             </button>
           </div>
         </form>

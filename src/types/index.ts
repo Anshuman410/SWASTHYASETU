@@ -5,6 +5,7 @@ export interface User {
   name: string;
   email: string;
   phone: string;
+  password?: string;
   role: UserRole;
   facilityId?: string;
   avatar?: string;
@@ -41,9 +42,13 @@ export interface Patient {
   id: string;
   abhaId: string;
   name: string;
+  email?: string;
+  password?: string;
   age: number;
   gender: 'Male' | 'Female' | 'Other';
   phone: string;
+  bloodGroup?: string;
+  emergencyContact?: string;
   village: string;
   block: string;
   district: string;
@@ -95,6 +100,7 @@ export interface Facility {
 export interface Doctor {
   id: string;
   name: string;
+  email?: string;
   specialty: string;
   facilityId: string;
   facilityName: string;

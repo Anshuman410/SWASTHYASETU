@@ -5,6 +5,8 @@ import {
   Play, Clock, MapPin, CheckCircle, Activity, ChevronRight
 } from 'lucide-react';
 
+import { Logo } from '../../components/common/Logo';
+
 interface PublicLandingProps {
   onNavigate: (route: string) => void;
   onLaunchDemo: () => void;
@@ -65,33 +67,19 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onNavigate, onLaun
 
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans">
-      {/* Top Marketing Header */}
+      {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-2xl bg-health-700 text-white flex items-center justify-center font-black shadow-md">
-            <HeartPulse className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <span className="text-lg font-black text-slate-900 leading-none block">
-              SWASTHYA<span className="text-health-700">SETU</span>
-            </span>
-            <span className="text-[10px] font-semibold text-slate-600">Public Healthcare Coordination Platform</span>
-          </div>
+        <div className="cursor-pointer" onClick={() => onNavigate('/')}>
+          <Logo size="sm" />
         </div>
 
         <div className="flex items-center gap-3">
           <button
-            onClick={onLaunchDemo}
-            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shadow-md transition-all transform hover:scale-105"
-          >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            Launch SIH Guided Demo
-          </button>
-          <button
             onClick={() => onNavigate('/login')}
-            className="px-4 py-2 rounded-xl bg-health-700 hover:bg-health-800 text-white font-bold text-xs shadow-md transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-health-700 hover:bg-health-800 text-white font-bold text-xs shadow-md transition-colors cursor-pointer flex items-center gap-1.5"
           >
-            Sign In / Register
+            <span>Sign In to Portal</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </header>
@@ -114,17 +102,10 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onNavigate, onLaun
 
         <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
           <button
-            onClick={onLaunchDemo}
-            className="px-6 py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-sm flex items-center gap-2 shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-0.5"
-          >
-            <Play className="w-4 h-4 fill-current" />
-            Launch Interactive Story Demo (Rahul Kumar Flow)
-          </button>
-          <button
             onClick={() => onNavigate('/login')}
-            className="px-6 py-3.5 rounded-2xl bg-health-700 hover:bg-health-800 text-white font-bold text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transition-all"
+            className="px-8 py-3.5 rounded-2xl bg-health-700 hover:bg-health-800 text-white font-bold text-sm flex items-center gap-2 shadow-lg hover:shadow-xl transition-all cursor-pointer"
           >
-            <span>Enter Role Dashboards</span>
+            <span>Access Official Portal</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -143,7 +124,7 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onNavigate, onLaun
         </div>
       </section>
 
-      {/* 10-Step Interactive Healthcare Journey */}
+      {/* 10-Step Care Journey */}
       <section className="bg-slate-50 border-y border-slate-200 py-16 px-6">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="text-center space-y-2">
@@ -200,19 +181,17 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({ onNavigate, onLaun
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-300 py-12 px-6 mt-auto border-t border-slate-800">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
-          <div>
-            <span className="text-lg font-black text-white tracking-tight">SWASTHYA<span className="text-health-400">SETU</span></span>
-            <p className="text-xs text-slate-400 mt-1">Connecting care. Strengthening communities.</p>
+          <div className="flex items-center gap-3">
+            <Logo size="sm" textColorMode="light" />
           </div>
 
           <div className="flex flex-wrap justify-center gap-6 text-xs font-semibold text-slate-400">
-            <button onClick={() => onNavigate('/')} className="hover:text-white">Home</button>
-            <button onClick={onLaunchDemo} className="hover:text-amber-400">Launch Demo</button>
-            <button onClick={() => onNavigate('/login')} className="hover:text-white">Role Login</button>
+            <button onClick={() => onNavigate('/')} className="hover:text-white cursor-pointer">Home</button>
+            <button onClick={() => onNavigate('/login')} className="hover:text-white cursor-pointer">Account Sign In</button>
           </div>
 
           <p className="text-[11px] text-slate-500">
-            Smart India Hackathon (SIH) Prototype • Demonstration System Only
+            SwasthyaSetu Public Health Network • All Rights Reserved
           </p>
         </div>
       </footer>

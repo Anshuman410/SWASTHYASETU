@@ -1,11 +1,11 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { Logo } from '../common/Logo';
 import {
   Home, Users, Calendar, Stethoscope, Building2 as Hospital, FlaskConical,
   Pill, ArrowRightLeft, CalendarCheck, FileHeart, ListOrdered,
-  Video, CheckSquare, ShieldCheck, Settings, HeartPulse, ChevronLeft,
-  UserPlus, BarChart3, HelpCircle
+  Video, ShieldCheck, Settings, ChevronLeft, UserPlus, BarChart3
 } from 'lucide-react';
 import { UserRole } from '../../types';
 
@@ -44,12 +44,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
       return [
         ...commonItems,
         { label: 'My Health Records', route: '/patient/records', icon: FileHeart },
-        { label: 'My Appointments', route: '/patient/appointments', icon: Calendar },
+        { label: 'Book Appointment', route: '/patient/appointments', icon: Calendar },
         { label: 'AI Triage Check', route: '/triage', icon: Stethoscope },
         { label: 'Smart Facilities', route: '/facilities', icon: Hospital },
         { label: 'My Referrals', route: '/referrals', icon: ArrowRightLeft },
-        { label: 'Medicine Availability', route: '/medicines', icon: Pill },
-        { label: 'Follow-ups & Care', route: '/follow-ups', icon: CalendarCheck },
         { label: 'Settings', route: '/settings', icon: Settings }
       ];
     }
@@ -120,43 +118,48 @@ export const Sidebar: React.FC<SidebarProps> = ({
     >
       {/* Top Brand Header */}
       <div>
-        <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100">
+        <div className={`h-16 flex items-center border-b border-slate-100 ${
+          collapsed ? 'justify-center px-2' : 'justify-between px-4'
+        }`}>
           <div
             onClick={() => onNavigate('/')}
-            className="flex items-center gap-2.5 cursor-pointer overflow-hidden"
+            className="flex items-center cursor-pointer overflow-hidden select-none"
           >
-            <div className="w-10 h-10 rounded-2xl bg-health-700 text-white flex items-center justify-center font-black text-lg shadow-md shrink-0">
-              <HeartPulse className="w-6 h-6 animate-pulse" />
-            </div>
-            {!collapsed && (
-              <div className="animate-letter">
-                <span className="text-base font-extrabold tracking-tight text-slate-900 leading-none block">
-                  SWASTHYA<span className="text-health-700">SETU</span>
-                </span>
-                <span className="text-[10px] font-medium text-slate-600 tracking-tighter">Connected Care</span>
-              </div>
+            {collapsed ? (
+              <Logo size="sm" showText={false} />
+            ) : (
+              <Logo size="sm" showText={true} />
             )}
           </div>
 
           <button
             onClick={onToggleCollapse}
-            className="hidden md:flex p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className={`hidden md:flex p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer ${
+              collapsed ? 'mt-2 absolute -right-3 top-4 bg-white border border-slate-200 shadow-sm rounded-full' : ''
+            }`}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            <ChevronLeft className={`w-5 h-5 transition-transform ${collapsed ? 'rotate-180' : ''}`} />
+            <ChevronLeft className={`w-4 h-4 transition-transform ${collapsed ? 'rotate-180' : ''}`} />
           </button>
         </div>
 
         {/* Menu Links */}
-        <nav className="p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-140px)]">
+        <nav className={`py-3 space-y-1 overflow-y-auto max-h-[calc(100vh-140px)] ${
+          collapsed ? 'px-2' : 'px-3'
+        }`}>
           {navItems.map((item, idx) => {
             const Icon = item.icon;
-            const isActive = currentRoute === item.route || currentRoute.startsWith(item.route + '/');
+            const isActive = currentRoute === item.route || (item.route !== '/' && currentRoute.startsWith(item.route));
 
             return (
               <button
                 key={idx}
                 onClick={() => onNavigate(item.route)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`w-full flex items-center rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  collapsed 
+                    ? 'justify-center p-3' 
+                    : 'gap-3 px-3 py-2.5'
+                } ${
                   isActive
                     ? 'bg-health-700 text-white shadow-md shadow-health-700/20'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -179,14 +182,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           })}
         </nav>
       </div>
-
-      {/* Bottom Footer Info */}
-      {!collapsed && (
-        <div className="p-4 m-3 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 text-center">
-          <p className="text-[11px] font-bold text-emerald-900">SIH Hackathon Prototype</p>
-          <p className="text-[10px] text-emerald-700 mt-0.5">Synthetic Patient Data • Public Health Care Layer</p>
-        </div>
-      )}
     </aside>
   );
 };
