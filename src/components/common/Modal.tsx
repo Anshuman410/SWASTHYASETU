@@ -23,11 +23,9 @@ export const Modal: React.FC<ModalProps> = ({
       if (e.key === 'Escape') onClose();
     };
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
       window.addEventListener('keydown', handleKeyDown);
     }
     return () => {
-      document.body.style.overflow = 'unset';
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
@@ -46,35 +44,33 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
-      style={{ overflowY: 'auto' }}
+      className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md overflow-y-auto"
+      onClick={onClose}
     >
-      <div
-        className={`w-full ${widthClasses[maxWidth]} bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col my-auto`}
-        style={{ maxHeight: '88vh' }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Sticky Header */}
-        <div className="flex items-center justify-between px-6 py-4 sm:py-5 border-b border-slate-100 bg-slate-50/90 shrink-0 rounded-t-3xl">
-          <div>
-            <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">{title}</h3>
-            {subtitle && <p className="text-xs text-slate-500 mt-0.5 font-medium">{subtitle}</p>}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-200/70 transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Dedicated Scrollable Form Body */}
-        <div 
-          className="p-6 sm:p-8 flex-1"
-          style={{ overflowY: 'auto', minHeight: 0 }}
+      <div className="flex items-start justify-center min-h-full py-10 px-3 sm:px-6">
+        <div
+          className={`w-full ${widthClasses[maxWidth]} bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col`}
+          onClick={e => e.stopPropagation()}
         >
-          {children}
+          {/* Sticky Header */}
+          <div className="flex items-center justify-between px-6 py-4 sm:py-5 border-b border-slate-100 bg-slate-50/90 shrink-0 rounded-t-3xl">
+            <div>
+              <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">{title}</h3>
+              {subtitle && <p className="text-xs text-slate-500 mt-0.5 font-medium">{subtitle}</p>}
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-200/70 transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Form Body - no height clip, scrolls with overlay */}
+          <div className="p-6 sm:p-8">
+            {children}
+          </div>
         </div>
       </div>
     </div>
