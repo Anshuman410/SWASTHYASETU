@@ -6,7 +6,7 @@ echo ==========================================
 set "PATH=C:\Program Files\Git\cmd;C:\Program Files\Git\bin;%PATH%"
 
 git add .
-git commit -m "UI: Make Register Patient form modal significantly wider and spacious with 2xl size and improved paddings"
+git commit -m "Fix: Perfectly center Modal in screen viewport with dedicated internal scrolling to always show submit button"
 git push origin main
 
 if errorlevel 1 (

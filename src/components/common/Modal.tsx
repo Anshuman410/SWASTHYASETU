@@ -45,13 +45,17 @@ export const Modal: React.FC<ModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-md p-3 sm:p-6 md:p-8 flex justify-center items-center">
+    <div 
+      className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
+      style={{ overflowY: 'auto' }}
+    >
       <div
-        className={`w-full ${widthClasses[maxWidth]} bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] transition-all`}
+        className={`w-full ${widthClasses[maxWidth]} bg-white rounded-3xl shadow-2xl border border-slate-200 flex flex-col my-auto`}
+        style={{ maxHeight: '88vh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Sticky Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-slate-50/90 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 sm:py-5 border-b border-slate-100 bg-slate-50/90 shrink-0 rounded-t-3xl">
           <div>
             <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">{title}</h3>
             {subtitle && <p className="text-xs text-slate-500 mt-0.5 font-medium">{subtitle}</p>}
@@ -65,8 +69,11 @@ export const Modal: React.FC<ModalProps> = ({
           </button>
         </div>
 
-        {/* Scrollable Body */}
-        <div className="p-6 sm:p-8 overflow-y-auto flex-1 overscroll-contain space-y-4">
+        {/* Dedicated Scrollable Form Body */}
+        <div 
+          className="p-6 sm:p-8 flex-1"
+          style={{ overflowY: 'auto', minHeight: 0 }}
+        >
           {children}
         </div>
       </div>
