@@ -21,7 +21,7 @@ export const HealthWorkerDashboard: React.FC<HealthWorkerDashboardProps> = ({ on
   const [showRegModal, setShowRegModal] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('rahul 123');
+  const [password, setPassword] = useState('rahul@123');
   const [age, setAge] = useState(28);
   const [gender, setGender] = useState<'Male' | 'Female' | 'Other'>('Male');
   const [phone, setPhone] = useState('+91 ');
@@ -34,7 +34,7 @@ export const HealthWorkerDashboard: React.FC<HealthWorkerDashboardProps> = ({ on
     registerPatient({ 
       name, 
       email: email.trim() || undefined, 
-      password: password.trim() || 'rahul 123',
+      password: password.trim() || 'rahul@123',
       age, 
       gender, 
       phone, 

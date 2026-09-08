@@ -235,7 +235,7 @@ export const HealthcareProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       abhaId: `ABHA-9821-4432-${Math.floor(1000 + Math.random() * 9000)}`,
       name: patientData.name || 'New Patient',
       email: patientData.email,
-      password: patientData.password || 'rahul 123',
+      password: patientData.password || 'rahul@123',
       age: patientData.age || 30,
       gender: patientData.gender || 'Male',
       phone: patientData.phone || '+91 90000 00000',
@@ -269,7 +269,7 @@ export const HealthcareProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           name: newPatient.name,
           email: newPatient.email,
           phone: newPatient.phone,
-          password: newPatient.password || 'rahul 123',
+          password: newPatient.password || 'rahul@123',
           role: 'patient',
           assignedVillage: newPatient.village
         };

@@ -184,46 +184,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess, onNavigateHo
               </button>
             </form>
           </div>
-
-          {/* Quick System Credentials Reference Box */}
-          <div className="pt-6 mt-6 border-t border-slate-100">
-            <p className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2.5">
-              Platform Access Accounts:
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-medium text-slate-600">
-              <div 
-                onClick={() => { setEmailOrPhone('admin@swasthyasetu.ac.in'); setPassword('admin@123'); }}
-                className="p-2 rounded-lg bg-slate-50 hover:bg-health-50 hover:text-health-900 border border-slate-200 cursor-pointer transition-colors"
-              >
-                <span className="font-bold text-slate-900 block">District Admin</span>
-                <span>admin@swasthyasetu.ac.in / admin@123</span>
-              </div>
-
-              <div 
-                onClick={() => { setEmailOrPhone('doctor@swasthyasetu.ac.in'); setPassword('doctor@123'); }}
-                className="p-2 rounded-lg bg-slate-50 hover:bg-health-50 hover:text-health-900 border border-slate-200 cursor-pointer transition-colors"
-              >
-                <span className="font-bold text-slate-900 block">Doctor / Specialist</span>
-                <span>doctor@swasthyasetu.ac.in / doctor@123</span>
-              </div>
-
-              <div 
-                onClick={() => { setEmailOrPhone('asha@swasthyasetu.ac.in'); setPassword('asha@123'); }}
-                className="p-2 rounded-lg bg-slate-50 hover:bg-health-50 hover:text-health-900 border border-slate-200 cursor-pointer transition-colors"
-              >
-                <span className="font-bold text-slate-900 block">Health Worker (ASHA)</span>
-                <span>asha@swasthyasetu.ac.in / asha@123</span>
-              </div>
-
-              <div 
-                onClick={() => { setEmailOrPhone('patient-rahul@gmail.com'); setPassword('rahul 123'); }}
-                className="p-2 rounded-lg bg-slate-50 hover:bg-health-50 hover:text-health-900 border border-slate-200 cursor-pointer transition-colors"
-              >
-                <span className="font-bold text-slate-900 block">Patient (Rahul Kumar)</span>
-                <span>patient-rahul@gmail.com / rahul 123</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

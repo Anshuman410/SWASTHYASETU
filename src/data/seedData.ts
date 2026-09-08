@@ -8,8 +8,8 @@ export const initialUsers: User[] = [
   {
     id: 'usr-patient-1',
     name: 'Rahul Kumar',
-    email: 'patient-rahul@gmail.com',
-    password: 'rahul 123',
+    email: 'rahul@gmail.com',
+    password: 'rahul@123',
     phone: '+91 98765 43210',
     role: 'patient',
     assignedVillage: 'Rampur'
