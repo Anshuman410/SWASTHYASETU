@@ -4,7 +4,7 @@ import { initialUsers } from '../data/seedData';
 
 interface AuthContextType {
   currentUser: User | null;
-  currentRole: UserRole | null;
+  currentRole: UserRole;
   users: User[];
   loginWithCredentials: (emailOrPhone: string, pass: string) => User | null;
   logout: () => void;
@@ -24,8 +24,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [currentRole, setCurrentRole] = useState<UserRole | null>(() => {
-    return currentUser ? currentUser.role : null;
+  const [currentRole, setCurrentRole] = useState<UserRole>(() => {
+    return currentUser ? currentUser.role : 'patient';
   });
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setCurrentRole(currentUser.role);
     } else {
       localStorage.removeItem('swasthya_user');
-      setCurrentRole(null);
+      setCurrentRole('patient');
     }
   }, [currentUser]);
 

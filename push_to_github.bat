@@ -1,12 +1,12 @@
 @echo off
 echo ==========================================
-echo   Pushing SWASTHYASETU Overhaul to GitHub
+echo   Pushing SWASTHYASETU Fix to GitHub
 echo ==========================================
 
 set "PATH=C:\Program Files\Git\cmd;C:\Program Files\Git\bin;%PATH%"
 
 git add .
-git commit -m "Feat: Complete production overhaul - real auth, admin CRUD, appointments, voice AI, custom logo"
+git commit -m "Fix: Resolve TypeScript build errors in TopNavbar and AuthContext"
 git push origin main
 
 if errorlevel 1 (

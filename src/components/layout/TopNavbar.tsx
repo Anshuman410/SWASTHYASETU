@@ -170,8 +170,8 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
             </div>
             <div className="hidden lg:block text-left">
               <p className="text-xs font-bold text-slate-900 leading-tight">{currentUser?.name}</p>
-              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] border ${roleBadgeColors[currentRole]}`}>
-                {roleLabels[currentRole]}
+              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] border ${currentRole ? roleBadgeColors[currentRole] : 'bg-slate-100 text-slate-700 border-slate-300'}`}>
+                {currentRole ? roleLabels[currentRole] : 'User'}
               </span>
             </div>
           </button>
@@ -181,8 +181,8 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
               <div className="p-2 bg-slate-50 rounded-xl mb-2">
                 <p className="text-xs font-bold text-slate-900">{currentUser?.name}</p>
                 <p className="text-[11px] text-slate-600">{currentUser?.email}</p>
-                <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold border ${roleBadgeColors[currentRole]}`}>
-                  {roleLabels[currentRole]}
+                <span className={`inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold border ${currentRole ? roleBadgeColors[currentRole] : 'bg-slate-100 text-slate-700 border-slate-300'}`}>
+                  {currentRole ? roleLabels[currentRole] : 'User'}
                 </span>
               </div>
 
