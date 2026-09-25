@@ -15,8 +15,16 @@ import {
   ChevronRight,
   Plus,
   ArrowUpDown,
+  X,
+  Lock,
+  Mail,
+  User,
+  Phone,
+  MapPin,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface StaffMember {
   id: string;
@@ -116,6 +124,16 @@ export default function TableBlock() {
   const [roleFilter, setRoleFilter] = useState<string>("All");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newWorkerName, setNewWorkerName] = useState("");
+  const [newWorkerEmail, setNewWorkerEmail] = useState("");
+  const [newWorkerPhone, setNewWorkerPhone] = useState("");
+  const [newWorkerVillage, setNewWorkerVillage] = useState("");
+  const [newWorkerPassword, setNewWorkerPassword] = useState("asha@123");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [modalFeedback, setModalFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
   const filteredStaff = staff.filter((member) => {
     const matchesSearch =
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -137,6 +155,73 @@ export default function TableBlock() {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
+  };
+
+  const handleCreateAsha = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setModalFeedback(null);
+
+    if (!newWorkerName || !newWorkerEmail || !newWorkerVillage || !newWorkerPassword) {
+      setModalFeedback({ type: "error", text: "Please fill all required fields." });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch("/api/admin/create-asha", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newWorkerName,
+          email: newWorkerEmail,
+          phone: newWorkerPhone,
+          village: newWorkerVillage,
+          password: newWorkerPassword,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setModalFeedback({ type: "error", text: data.error || "Failed to create worker." });
+      } else {
+        setModalFeedback({
+          type: "success",
+          text: `ASHA Worker "${newWorkerName}" created successfully! They can now log in with password: ${newWorkerPassword}`,
+        });
+
+        // Add to active table view
+        const newStaffMember: StaffMember = {
+          id: `ASHA-${Math.floor(100 + Math.random() * 900)}`,
+          name: newWorkerName,
+          email: newWorkerEmail,
+          role: "ASHA Worker",
+          department: newWorkerVillage,
+          status: "Active",
+          assignedPatients: 0,
+          joinedDate: "Today",
+          avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200",
+        };
+
+        setStaff((prev) => [newStaffMember, ...prev]);
+
+        // Reset form after short delay
+        setTimeout(() => {
+          setIsModalOpen(false);
+          setNewWorkerName("");
+          setNewWorkerEmail("");
+          setNewWorkerPhone("");
+          setNewWorkerVillage("");
+          setNewWorkerPassword("asha@123");
+          setModalFeedback(null);
+        }, 2200);
+      }
+    } catch {
+      setModalFeedback({ type: "error", text: "Network error occurred." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getRoleBadge = (role: StaffMember["role"]) => {
@@ -202,7 +287,7 @@ export default function TableBlock() {
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Button: Add ASHA Worker */}
         <div className="flex items-center gap-2">
           {selectedIds.length > 0 && (
             <span className="text-xs text-emerald-400 font-semibold px-2">
@@ -211,12 +296,11 @@ export default function TableBlock() {
           )}
           <Button
             size="sm"
-            variant="emerald"
-            className="rounded-xl text-xs font-semibold gap-1.5 shadow-md"
-            onClick={() => alert("Add New Staff modal: Register Doctor or ASHA Node Worker")}
+            className="rounded-xl text-xs font-semibold gap-1.5 shadow-md bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold"
+            onClick={() => setIsModalOpen(true)}
           >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add Member</span>
+            <Plus className="w-3.5 h-3.5 stroke-[3]" />
+            <span>Create ASHA Worker</span>
           </Button>
         </div>
       </div>
@@ -234,26 +318,26 @@ export default function TableBlock() {
                     selectedIds.length === filteredStaff.length
                   }
                   onChange={toggleSelectAll}
-                  className="rounded border-white/20 bg-slate-900 text-emerald-500 focus:ring-0 cursor-pointer"
+                  className="rounded border-white/20 bg-white/5 text-emerald-500 focus:ring-0 focus:ring-offset-0"
                 />
               </th>
-              <th className="py-3 px-4">Staff Member</th>
+              <th className="py-3 px-4">Member Name & Email</th>
               <th className="py-3 px-4">Role</th>
-              <th className="py-3 px-4">Department / Village Node</th>
+              <th className="py-3 px-4">Node / Department</th>
               <th className="py-3 px-4">Status</th>
-              <th className="py-3 px-4">Assigned Active</th>
+              <th className="py-3 px-4 text-center">Assigned Patients</th>
+              <th className="py-3 px-4">Joined Date</th>
               <th className="py-3 px-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
             {filteredStaff.map((member) => {
               const isSelected = selectedIds.includes(member.id);
-
               return (
                 <tr
                   key={member.id}
-                  className={`hover:bg-white/[0.03] transition-colors ${
-                    isSelected ? "bg-emerald-500/[0.08]" : ""
+                  className={`transition-colors hover:bg-white/[0.02] ${
+                    isSelected ? "bg-emerald-500/[0.03]" : ""
                   }`}
                 >
                   <td className="py-3 px-4">
@@ -261,14 +345,15 @@ export default function TableBlock() {
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => toggleSelectRow(member.id)}
-                      className="rounded border-white/20 bg-slate-900 text-emerald-500 focus:ring-0 cursor-pointer"
+                      className="rounded border-white/20 bg-white/5 text-emerald-500 focus:ring-0 focus:ring-offset-0"
                     />
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-full bg-cover bg-center border border-white/10"
-                        style={{ backgroundImage: `url(${member.avatar})` }}
+                      <img
+                        src={member.avatar}
+                        alt={member.name}
+                        className="w-8 h-8 rounded-full object-cover border border-white/10"
                       />
                       <div>
                         <div className="font-semibold text-white">
@@ -282,7 +367,7 @@ export default function TableBlock() {
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full font-medium text-[10px] border ${getRoleBadge(
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${getRoleBadge(
                         member.role
                       )}`}
                     >
@@ -294,30 +379,22 @@ export default function TableBlock() {
                   </td>
                   <td className="py-3 px-4">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full font-medium text-[10px] border ${getStatusBadge(
+                      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium border ${getStatusBadge(
                         member.status
                       )}`}
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-current" />
                       {member.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4 font-mono font-medium text-slate-200">
-                    {member.assignedPatients > 0 ? (
-                      <span className="text-emerald-400 font-bold">
-                        {member.assignedPatients} Patients
-                      </span>
-                    ) : (
-                      <span className="text-slate-500">—</span>
-                    )}
+                  <td className="py-3 px-4 text-center font-medium text-slate-300">
+                    {member.assignedPatients}
+                  </td>
+                  <td className="py-3 px-4 text-slate-400">
+                    {member.joinedDate}
                   </td>
                   <td className="py-3 px-4 text-right">
-                    <button
-                      onClick={() =>
-                        alert(`Manage staff profile for ${member.name} (${member.role})`)
-                      }
-                      className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-                    >
+                    <button className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-all">
                       <MoreVertical className="w-4 h-4" />
                     </button>
                   </td>
@@ -329,20 +406,185 @@ export default function TableBlock() {
       </div>
 
       {/* Pagination Footer */}
-      <div className="p-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400 bg-white/[0.01]">
-        <span>
+      <div className="p-4 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+        <div>
           Showing {filteredStaff.length} of {staff.length} staff members
-        </span>
+        </div>
         <div className="flex items-center gap-2">
-          <button className="p-1.5 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-40">
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled
+            className="h-8 px-2 text-slate-400 hover:text-white"
+          >
             <ChevronLeft className="w-4 h-4" />
-          </button>
-          <span className="px-2 font-medium text-slate-200">Page 1 of 1</span>
-          <button className="p-1.5 rounded-lg border border-white/10 text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-40">
+          </Button>
+          <span className="px-2 font-medium text-white">1</span>
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled
+            className="h-8 px-2 text-slate-400 hover:text-white"
+          >
             <ChevronRight className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       </div>
+
+      {/* Create ASHA Worker Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-3xl border border-white/15 bg-[#0f172a] p-6 shadow-2xl">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-5 right-5 p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {/* Modal Header */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                <UserCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Create ASHA Worker</h3>
+                <p className="text-xs text-slate-400">
+                  Deploy a new community health node representative
+                </p>
+              </div>
+            </div>
+
+            {/* Feedback alert */}
+            {modalFeedback && (
+              <div
+                className={`mb-4 p-3 rounded-xl text-xs flex items-center gap-2 ${
+                  modalFeedback.type === "success"
+                    ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
+                    : "bg-red-500/15 border border-red-500/30 text-red-400"
+                }`}
+              >
+                {modalFeedback.type === "success" ? (
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                )}
+                <span>{modalFeedback.text}</span>
+              </div>
+            )}
+
+            {/* Form */}
+            <form onSubmit={handleCreateAsha} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Worker Full Name *
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                  <Input
+                    type="text"
+                    required
+                    placeholder="e.g. Sunita Devi"
+                    value={newWorkerName}
+                    onChange={(e) => setNewWorkerName(e.target.value)}
+                    className="pl-9 h-10 bg-white/5 border-white/10 text-white rounded-xl text-xs placeholder:text-slate-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Email Address *
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                  <Input
+                    type="email"
+                    required
+                    placeholder="sunita.asha@gmail.com"
+                    value={newWorkerEmail}
+                    onChange={(e) => setNewWorkerEmail(e.target.value)}
+                    className="pl-9 h-10 bg-white/5 border-white/10 text-white rounded-xl text-xs placeholder:text-slate-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Phone Number
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                    <Input
+                      type="tel"
+                      placeholder="+91 98765 43210"
+                      value={newWorkerPhone}
+                      onChange={(e) => setNewWorkerPhone(e.target.value)}
+                      className="pl-9 h-10 bg-white/5 border-white/10 text-white rounded-xl text-xs placeholder:text-slate-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Assigned Village *
+                  </label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                    <Input
+                      type="text"
+                      required
+                      placeholder="e.g. Rampur Sector 3"
+                      value={newWorkerVillage}
+                      onChange={(e) => setNewWorkerVillage(e.target.value)}
+                      className="pl-9 h-10 bg-white/5 border-white/10 text-white rounded-xl text-xs placeholder:text-slate-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Initial Password *
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                  <Input
+                    type="text"
+                    required
+                    value={newWorkerPassword}
+                    onChange={(e) => setNewWorkerPassword(e.target.value)}
+                    className="pl-9 h-10 bg-white/5 border-white/10 text-white rounded-xl text-xs"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Share this password with the ASHA worker for their first mobile login.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setIsModalOpen(false)}
+                  className="h-10 text-xs text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="h-10 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20"
+                >
+                  {isSubmitting ? "Creating..." : "Create ASHA Worker"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

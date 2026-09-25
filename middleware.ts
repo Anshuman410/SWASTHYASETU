@@ -4,12 +4,12 @@ import { NextResponse } from "next/server";
 export default withAuth(
   function middleware(req) {
     const { pathname } = req.nextUrl;
-    const role = req.nextauth.token?.role;
+    const tokenRole = req.nextauth.token?.role as string | undefined;
+    const cookieRole =
+      req.cookies.get("user_role")?.value ||
+      req.cookies.get("demo_role")?.value;
 
-    // Allow demo/preview override in development if explicitly passed
-    const isDev = process.env.NODE_ENV !== "production";
-    const demoOverride = req.cookies.get("demo_role")?.value;
-    const effectiveRole = role || (isDev ? demoOverride : null);
+    const effectiveRole = tokenRole || cookieRole;
 
     if (pathname.startsWith("/admin") && effectiveRole !== "ADMIN") {
       return NextResponse.redirect(new URL("/login?error=UnauthorizedAdmin", req.url));
@@ -28,15 +28,11 @@ export default withAuth(
   },
   {
     callbacks: {
-      // In dev mode, allow visiting dashboards if a token exists or if testing directly
       authorized: ({ token, req }) => {
-        if (process.env.NODE_ENV !== "production") {
-          // Allow access in development if token exists or demo query flag present
-          if (token) return true;
-          const isTesting = req.nextUrl.searchParams.get("demo") === "true";
-          if (isTesting) return true;
-        }
-        return !!token;
+        const cookieRole =
+          req.cookies.get("user_role")?.value ||
+          req.cookies.get("demo_role")?.value;
+        return !!token || !!cookieRole;
       },
     },
   }

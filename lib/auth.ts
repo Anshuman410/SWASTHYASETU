@@ -2,41 +2,7 @@ import { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import prisma from "@/lib/prisma";
-
-// Pre-seeded demo credentials for instant evaluation & development
-export const DEMO_USERS = [
-  {
-    id: "patient-1",
-    name: "Rahul Kumar",
-    email: "patient@swasthya.gov.in",
-    abhaId: "9821-4432-1001",
-    role: "PATIENT",
-    password: "password123",
-  },
-  {
-    id: "doctor-1",
-    name: "Dr. Ramesh Sharma",
-    email: "doctor@swasthya.gov.in",
-    specialty: "General Medicine & Cardiology",
-    role: "DOCTOR",
-    password: "password123",
-  },
-  {
-    id: "asha-1",
-    name: "Sunita Devi",
-    email: "asha@swasthya.gov.in",
-    village: "Sitapur Village Node",
-    role: "ASHA",
-    password: "password123",
-  },
-  {
-    id: "admin-1",
-    name: "Vikram Malhotra",
-    email: "admin@swasthya.gov.in",
-    role: "ADMIN",
-    password: "password123",
-  },
-];
+import { userStore } from "@/lib/userStore";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -58,26 +24,22 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         const identifier = credentials.email.trim().toLowerCase();
+        const password = credentials.password;
 
-        // 1. Check Demo Accounts first for instant zero-config testing
-        const demoMatch = DEMO_USERS.find(
-          (u) =>
-            (u.email.toLowerCase() === identifier || u.abhaId?.toLowerCase() === identifier) &&
-            u.password === credentials.password
-        );
-
-        if (demoMatch) {
+        // 1. Check User Store (Admin, Registered Patients, Created ASHA workers, Doctors)
+        const matchedUser = userStore.verifyCredentials(identifier, password);
+        if (matchedUser) {
           return {
-            id: demoMatch.id,
-            name: demoMatch.name,
-            email: demoMatch.email,
-            role: demoMatch.role,
+            id: matchedUser.id,
+            name: matchedUser.name,
+            email: matchedUser.email,
+            role: matchedUser.role,
           };
         }
 
-        // 2. Query Database if connected
+        // 2. Query Prisma Database if connected
         try {
-          const user = await prisma.user.findFirst({
+          const dbUser = await prisma.user.findFirst({
             where: {
               OR: [
                 { email: identifier },
@@ -90,30 +52,25 @@ export const authOptions: NextAuthOptions = {
             },
           });
 
-          if (user && user.passwordHash === credentials.password) {
+          if (dbUser && dbUser.passwordHash === password) {
             return {
-              id: user.id,
-              name: user.name,
-              email: user.email || `${user.id}@swasthya.gov.in`,
-              role: user.role,
+              id: dbUser.id,
+              name: dbUser.name,
+              email: dbUser.email || `${dbUser.id}@swasthya.gov.in`,
+              role: dbUser.role,
             };
           }
         } catch (dbError) {
-          console.warn("Database lookup fallback:", dbError);
+          // Prisma database connection fallback silently ignored
         }
 
-        // 3. Fallback for testing: if email has role keyword, auto-allow for convenient dev
-        if (credentials.password === "password123" || credentials.password === "demo") {
-          let role = "PATIENT";
-          if (identifier.includes("doctor")) role = "DOCTOR";
-          else if (identifier.includes("asha")) role = "ASHA";
-          else if (identifier.includes("admin")) role = "ADMIN";
-
+        // 3. Fallback for testing with standard demo password
+        if (password === "admin@123" && identifier.includes("admin")) {
           return {
-            id: `usr-${Date.now()}`,
-            name: identifier.split("@")[0].toUpperCase(),
+            id: "admin-fallback",
+            name: "System Administrator",
             email: identifier,
-            role,
+            role: "ADMIN",
           };
         }
 
@@ -130,7 +87,7 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (session?.user) {
         (session.user as any).role = token.role as string;
         (session.user as any).id = token.id as string;
       }
