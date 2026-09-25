@@ -26,8 +26,7 @@ const defaultHospitals: HospitalMarker[] = [
     distance: "4.2 km",
     rating: 4.8,
     availableBeds: 45,
-    image:
-      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=400",
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=400",
   },
   {
     id: 2,
@@ -38,8 +37,7 @@ const defaultHospitals: HospitalMarker[] = [
     distance: "3.8 km",
     rating: 4.4,
     availableBeds: 28,
-    image:
-      "https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?q=80&w=400",
+    image: "https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?q=80&w=400",
   },
   {
     id: 3,
@@ -50,8 +48,7 @@ const defaultHospitals: HospitalMarker[] = [
     distance: "2.1 km",
     rating: 4.1,
     availableBeds: 6,
-    image:
-      "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=400",
+    image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=400",
   },
   {
     id: 4,
@@ -62,8 +59,7 @@ const defaultHospitals: HospitalMarker[] = [
     distance: "6.5 km",
     rating: 4.6,
     availableBeds: 32,
-    image:
-      "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=400",
+    image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=400",
   },
 ];
 
@@ -74,79 +70,122 @@ interface MapViewProps {
 
 // Inner Leaflet component that imports leaflet only on client
 function LeafletMapInner({ selectedId, onSelectHospital }: MapViewProps) {
-  const [L, setL] = useState<any>(null);
+  const [LInstance, setLInstance] = useState<any>(null);
   const [MapComponents, setMapComponents] = useState<any>(null);
 
   useEffect(() => {
-    // Dynamic import of Leaflet & React-Leaflet
     Promise.all([import("leaflet"), import("react-leaflet")]).then(
       ([leafletModule, reactLeafletModule]) => {
-        setL(leafletModule.default);
+        setLInstance(leafletModule.default);
         setMapComponents(reactLeafletModule);
       }
     );
   }, []);
 
-  if (!L || !MapComponents) {
+  if (!LInstance || !MapComponents) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900/60 rounded-3xl border border-white/10 text-slate-400 gap-3">
+      <div className="w-full h-full min-h-[500px] flex flex-col items-center justify-center bg-slate-900/80 rounded-3xl border border-white/10 text-slate-400 gap-3">
         <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-        <span className="text-xs font-medium">Loading OpenStreetMap Engine...</span>
+        <span className="text-xs font-semibold text-emerald-400">Loading Geospatial Health Network Map...</span>
       </div>
     );
   }
 
   const { MapContainer, TileLayer, Marker, Popup } = MapComponents;
 
-  // Custom Leaflet marker icons styled with emerald pin
-  const customIcon = new L.Icon({
-    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-    iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
-    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-  });
+  // Custom high-contrast SVG pin that never fails to load (no external CDN icon dependency)
+  const createCustomPin = (isSelected: boolean) =>
+    LInstance.divIcon({
+      className: "custom-map-pin",
+      html: `
+        <div style="
+          position: relative;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        ">
+          <span style="
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: ${isSelected ? "#10b981" : "#059669"};
+            opacity: 0.35;
+            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+          "></span>
+          <div style="
+            position: relative;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: ${isSelected ? "#34d399" : "#10b981"};
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          ">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#041f17" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+          </div>
+        </div>
+      `,
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+      popupAnchor: [0, -18],
+    });
 
   const center: [number, number] = [28.5672, 77.21];
 
   return (
-    <div className="w-full h-full rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative">
+    <div className="w-full h-full min-h-[480px] rounded-3xl overflow-hidden border border-white/10 shadow-2xl relative bg-[#0b0f17]">
       <MapContainer
         center={center}
         zoom={13}
-        scrollWheelZoom={false}
+        scrollWheelZoom={true}
         className="w-full h-full"
-        style={{ background: "#0b0f17", minHeight: "450px" }}
+        style={{ width: "100%", height: "100%", minHeight: "480px", background: "#0b0f17" }}
       >
-        {/* CartoDB Dark Matter tiles matching the soft dark mode theme */}
+        {/* OpenStreetMap Standard / CartoDB Dark Matter tile layer with automatic fallback - 100% Free, No API key */}
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          subdomains="abcd"
+          maxZoom={19}
         />
 
-        {defaultHospitals.map((h) => (
-          <Marker
-            key={h.id}
-            position={[h.lat, h.lng]}
-            icon={customIcon}
-            eventHandlers={{
-              click: () => onSelectHospital && onSelectHospital(h.id),
-            }}
-          >
-            <Popup className="custom-dark-popup">
-              <div className="p-1 text-slate-900">
-                <h4 className="font-bold text-xs">{h.name}</h4>
-                <p className="text-[10px] text-slate-600">{h.type}</p>
-                <div className="flex items-center justify-between mt-1 text-[10px] font-semibold text-emerald-700">
-                  <span>{h.distance}</span>
-                  <span>{h.availableBeds} beds open</span>
+        {defaultHospitals.map((h) => {
+          const isSelected = selectedId === h.id;
+          return (
+            <Marker
+              key={h.id}
+              position={[h.lat, h.lng]}
+              icon={createCustomPin(isSelected)}
+              eventHandlers={{
+                click: () => onSelectHospital && onSelectHospital(h.id),
+              }}
+            >
+              <Popup className="custom-leaflet-popup">
+                <div style={{ minWidth: "160px", padding: "4px" }}>
+                  <div style={{ fontWeight: "bold", fontSize: "12px", color: "#0f172a" }}>
+                    {h.name}
+                  </div>
+                  <div style={{ fontSize: "10px", color: "#64748b", marginTop: "2px" }}>
+                    {h.type}
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px", fontSize: "10px", fontWeight: "600", color: "#059669" }}>
+                    <span>{h.distance}</span>
+                    <span>{h.availableBeds} beds open</span>
+                  </div>
                 </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );
@@ -156,9 +195,9 @@ function LeafletMapInner({ selectedId, onSelectHospital }: MapViewProps) {
 export const MapView = dynamic(() => Promise.resolve(LeafletMapInner), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full min-h-[450px] flex flex-col items-center justify-center bg-slate-900/60 rounded-3xl border border-white/10 text-slate-400 gap-3">
+    <div className="w-full h-full min-h-[480px] flex flex-col items-center justify-center bg-slate-900/80 rounded-3xl border border-white/10 text-slate-400 gap-3">
       <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-      <span className="text-xs font-medium">Initializing Soft Dark Map...</span>
+      <span className="text-xs font-semibold text-emerald-400">Loading Map Explorer...</span>
     </div>
   ),
 });

@@ -62,23 +62,39 @@ function LoginForm() {
         return;
       }
 
-      // Determine proper role destination
-      let dest = "/patient/dashboard";
+      // Fetch actual authenticated session role
       let role = "PATIENT";
-
-      if (cleanEmail === "admin@gmail.com" || cleanEmail.includes("admin")) {
-        dest = "/admin/dashboard";
-        role = "ADMIN";
-      } else if (cleanEmail.includes("doctor")) {
-        dest = "/doctor/dashboard";
-        role = "DOCTOR";
-      } else if (cleanEmail.includes("asha")) {
-        dest = "/asha/dashboard";
-        role = "ASHA";
-      } else {
-        dest = "/patient/dashboard";
-        role = "PATIENT";
+      try {
+        const sessionRes = await fetch("/api/auth/session");
+        const sessionData = await sessionRes.json();
+        if (sessionData?.user?.role) {
+          role = sessionData.user.role;
+        } else {
+          // Fallback inference if session takes a moment
+          if (cleanEmail === "admin@gmail.com" || cleanEmail.includes("admin")) {
+            role = "ADMIN";
+          } else if (cleanEmail.includes("doctor")) {
+            role = "DOCTOR";
+          } else if (cleanEmail.includes("asha")) {
+            role = "ASHA";
+          }
+        }
+      } catch {
+        if (cleanEmail === "admin@gmail.com" || cleanEmail.includes("admin")) {
+          role = "ADMIN";
+        } else if (cleanEmail.includes("doctor")) {
+          role = "DOCTOR";
+        } else if (cleanEmail.includes("asha")) {
+          role = "ASHA";
+        }
       }
+
+      // Map role directly to its dashboard
+      let dest = "/patient/dashboard";
+      if (role === "ADMIN") dest = "/admin/dashboard";
+      else if (role === "ASHA") dest = "/asha/dashboard";
+      else if (role === "DOCTOR") dest = "/doctor/dashboard";
+      else dest = "/patient/dashboard";
 
       // Set cookie for middleware access
       document.cookie = `demo_role=${role}; path=/; max-age=86400; SameSite=Lax`;

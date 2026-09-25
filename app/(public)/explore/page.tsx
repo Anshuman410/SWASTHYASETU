@@ -139,7 +139,7 @@ export default function HospitalExplorer() {
       {/* Main Split Layout: Left Map, Right Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* LEFT: Leaflet Map (Height fixed for desktop, responsive on mobile) */}
-        <div className="lg:col-span-6 h-[400px] lg:h-[620px] rounded-3xl overflow-hidden sticky top-28">
+        <div className="lg:col-span-6 h-[480px] lg:h-[650px] w-full rounded-3xl overflow-hidden sticky top-28 shadow-2xl">
           <MapView
             selectedId={activeHospitalId}
             onSelectHospital={(id) => setActiveHospitalId(id)}

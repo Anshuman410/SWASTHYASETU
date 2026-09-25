@@ -22,42 +22,81 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const facilities = [
+interface FacilityDetail {
+  id: number;
+  title: string;
+  subtitle: string;
+  category: string;
+  beds: string;
+  image: string;
+  opdTimings: string;
+  fee: string;
+  phone: string;
+  doctors: { name: string; specialty: string; available: string }[];
+}
+
+const facilities: FacilityDetail[] = [
   {
     id: 1,
     title: "District Hospital",
     subtitle: "2.4 km away",
     category: "Tertiary Care",
     beds: "18 beds available",
+    opdTimings: "08:30 AM - 01:30 PM",
+    fee: "₹0 (Free via PM-JAY / ABDM)",
+    phone: "+91 11 2658 8500",
     image:
       "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=600",
+    doctors: [
+      { name: "Dr. Ramesh Sharma", specialty: "Cardiology & General Medicine", available: "Room 104 (Token #24-#40)" },
+      { name: "Dr. Priya Iyer", specialty: "Pediatrics & Neonatal", available: "Room 108 (Token #10-#30)" },
+    ],
   },
   {
     id: 2,
     title: "PHC Rampur",
     subtitle: "4.1 km away",
     category: "Primary Health Center",
-    beds: "Walk-in open",
+    beds: "Walk-in open (6 beds)",
+    opdTimings: "09:00 AM - 03:00 PM",
+    fee: "₹0 (Universal Free OPD)",
+    phone: "+91 12 4432 9901",
     image:
       "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=600",
+    doctors: [
+      { name: "Dr. Alok Verma", specialty: "Family Physician & Triage", available: "Main OPD Hall" },
+      { name: "Sunita Devi", specialty: "Community ASHA Incharge", available: "Sub-Center Desk" },
+    ],
   },
   {
     id: 3,
     title: "Dr. Sharma Clinic",
-    subtitle: "Specialist",
+    subtitle: "Specialist OPD",
     category: "Cardiology & General",
-    beds: "Tokens available",
+    beds: "Daycare facility",
+    opdTimings: "04:30 PM - 08:30 PM",
+    fee: "₹200 (Empaneled ABDM Rate)",
+    phone: "+91 98111 55678",
     image:
       "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=600",
+    doctors: [
+      { name: "Dr. Ramesh Sharma", specialty: "Senior Interventional Cardiologist", available: "Cabin 1" },
+    ],
   },
   {
     id: 4,
-    title: "City Lab",
-    subtitle: "Diagnostics",
+    title: "City Pathology Hub",
+    subtitle: "Diagnostics & Imaging",
     category: "Automated Pathology",
-    beds: "Same day report",
+    beds: "Same day digital sync",
+    opdTimings: "07:00 AM - 09:00 PM",
+    fee: "Cashless for ABHA Cardholders",
+    phone: "+91 11 4050 6070",
     image:
       "https://images.unsplash.com/photo-1579154204601-01588f351e67?q=80&w=600",
+    doctors: [
+      { name: "Dr. Niharika Sen", specialty: "Chief Pathologist", available: "Lab Terminal 2" },
+    ],
   },
 ];
 
@@ -72,6 +111,9 @@ const journeySteps = [
 
 export default function PatientDashboard() {
   const [selectedFacility, setSelectedFacility] = useState<number | null>(null);
+  const [activeModalFacility, setActiveModalFacility] = useState<FacilityDetail | null>(null);
+  const [bookedTokenSuccess, setBookedTokenSuccess] = useState<string | null>(null);
+  const [currentQueueToken, setCurrentQueueToken] = useState(24);
 
   return (
     <div className="space-y-8">
@@ -287,57 +329,169 @@ export default function PatientDashboard() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {facilities.map((facility) => {
-            const isHovered = selectedFacility === facility.id;
+      {/* Facility Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {facilities.map((facility) => {
+          return (
+            <motion.div
+              key={facility.id}
+              onClick={() => setActiveModalFacility(facility)}
+              className="group relative h-72 rounded-3xl overflow-hidden border border-white/10 glass-card cursor-pointer shadow-xl hover:border-emerald-500/50 transition-all"
+            >
+              {/* Image Background with zoom effect */}
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                style={{ backgroundImage: `url(${facility.image})` }}
+              />
 
-            return (
-              <motion.div
-                key={facility.id}
-                onMouseEnter={() => setSelectedFacility(facility.id)}
-                onMouseLeave={() => setSelectedFacility(null)}
-                className="group relative h-72 rounded-3xl overflow-hidden border border-white/10 glass-card cursor-pointer shadow-xl"
-              >
-                {/* Image Background with zoom effect */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                  style={{ backgroundImage: `url(${facility.image})` }}
-                />
+              {/* Gradient Overlay for soft dark text legibility */}
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent group-hover:via-slate-950/40 transition-colors duration-300" />
 
-                {/* Gradient Overlay for soft dark text legibility */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent group-hover:via-slate-950/40 transition-colors duration-300" />
+              {/* Top Badge */}
+              <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-emerald-300 border border-white/10">
+                  {facility.category}
+                </span>
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-slate-300 border border-white/10 flex items-center gap-1">
+                  <MapPin className="w-3 h-3 text-emerald-400" />
+                  {facility.subtitle}
+                </span>
+              </div>
 
-                {/* Top Badge */}
-                <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-emerald-300 border border-white/10">
-                    {facility.category}
-                  </span>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-slate-300 border border-white/10 flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-emerald-400" />
-                    {facility.subtitle}
-                  </span>
+              {/* Bottom Content Card */}
+              <div className="absolute bottom-0 left-0 right-0 p-5 z-10 flex flex-col justify-end">
+                <span className="text-xs text-emerald-400 font-medium flex items-center gap-1">
+                  <Activity className="w-3 h-3" />
+                  {facility.beds}
+                </span>
+                <h3 className="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors mt-0.5">
+                  {facility.title}
+                </h3>
+
+                <div className="mt-3 flex items-center justify-between text-xs text-slate-300 font-medium pt-3 border-t border-white/10">
+                  <span className="group-hover:text-white font-semibold">View OPD & Book Token</span>
+                  <ArrowRight className="w-4 h-4 text-emerald-400 transform group-hover:translate-x-1.5 transition-transform" />
                 </div>
-
-                {/* Bottom Content Card */}
-                <div className="absolute bottom-0 left-0 right-0 p-5 z-10 flex flex-col justify-end">
-                  <span className="text-xs text-emerald-400 font-medium flex items-center gap-1">
-                    <Activity className="w-3 h-3" />
-                    {facility.beds}
-                  </span>
-                  <h3 className="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors mt-0.5">
-                    {facility.title}
-                  </h3>
-
-                  <div className="mt-3 flex items-center justify-between text-xs text-slate-300 font-medium pt-3 border-t border-white/10">
-                    <span className="group-hover:text-white">Book Digital Token</span>
-                    <ArrowRight className="w-4 h-4 text-emerald-400 transform group-hover:translate-x-1.5 transition-transform" />
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
       </motion.div>
+
+      {/* Facility Details & Token Booking Modal */}
+      {activeModalFacility && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg rounded-3xl border border-emerald-500/30 bg-[#0f172a] p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            {/* Close Button */}
+            <button
+              onClick={() => setActiveModalFacility(null)}
+              className="absolute top-5 right-5 p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10"
+            >
+              ✕
+            </button>
+
+            {/* Header */}
+            <div className="flex items-start gap-4">
+              <div
+                className="w-16 h-16 rounded-2xl bg-cover bg-center shrink-0 border border-white/10 shadow-md"
+                style={{ backgroundImage: `url(${activeModalFacility.image})` }}
+              />
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                  {activeModalFacility.category}
+                </span>
+                <h3 className="text-xl font-bold text-white mt-1">
+                  {activeModalFacility.title}
+                </h3>
+                <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+                  <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{activeModalFacility.subtitle}</span>
+                  <span>•</span>
+                  <span>{activeModalFacility.phone}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Metrics */}
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 text-xs">
+              <div>
+                <span className="text-slate-400 text-[10px] uppercase font-bold block">OPD Hours</span>
+                <span className="text-white font-medium">{activeModalFacility.opdTimings}</span>
+              </div>
+              <div>
+                <span className="text-slate-400 text-[10px] uppercase font-bold block">Consultation Fee</span>
+                <span className="text-emerald-400 font-bold">{activeModalFacility.fee}</span>
+              </div>
+            </div>
+
+            {/* Doctors On Duty */}
+            <div>
+              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-2">
+                Available Doctors On Duty
+              </span>
+              <div className="space-y-2">
+                {activeModalFacility.doctors.map((doc, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between text-xs"
+                  >
+                    <div>
+                      <div className="font-semibold text-white">{doc.name}</div>
+                      <div className="text-[11px] text-slate-400">{doc.specialty}</div>
+                    </div>
+                    <span className="px-2 py-1 rounded-xl bg-emerald-500/10 text-emerald-300 text-[10px] font-medium border border-emerald-500/20">
+                      {doc.available}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Token Booking Action */}
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] uppercase text-slate-400 font-bold block">Next Available Token</span>
+                <span className="text-base font-extrabold text-emerald-400 font-mono">
+                  Token #{currentQueueToken + 1}
+                </span>
+              </div>
+
+              <Button
+                onClick={() => {
+                  const nextToken = currentQueueToken + 1;
+                  setCurrentQueueToken(nextToken);
+                  setBookedTokenSuccess(
+                    `Token #${nextToken} booked at ${activeModalFacility.title}! Your QR Pass is active on your ABHA Profile.`
+                  );
+                  setActiveModalFacility(null);
+                  setTimeout(() => setBookedTokenSuccess(null), 5000);
+                }}
+                className="h-11 px-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/25"
+              >
+                Confirm & Book Token #{currentQueueToken + 1}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Booked Token Confirmation Banner */}
+      {bookedTokenSuccess && (
+        <div className="fixed bottom-6 right-6 z-50 p-4 rounded-3xl bg-slate-900 border border-emerald-500/50 shadow-2xl text-xs text-emerald-300 flex items-center gap-3 animate-in slide-in-from-bottom duration-300">
+          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          <div>
+            <div className="font-bold text-white">OPD Token Generated!</div>
+            <div className="text-[11px] text-slate-300">{bookedTokenSuccess}</div>
+          </div>
+          <button
+            onClick={() => setBookedTokenSuccess(null)}
+            className="p-1 rounded-lg text-slate-400 hover:text-white"
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </div>
   );
 }

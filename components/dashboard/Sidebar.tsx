@@ -19,6 +19,11 @@ import {
   ChevronRight,
   Menu,
   X,
+  Users,
+  HeartPulse,
+  Pill,
+  Calendar,
+  AlertTriangle,
 } from "lucide-react";
 
 const patientNavItems = [
@@ -27,6 +32,27 @@ const patientNavItems = [
   { name: "Find Hospitals", href: "/explore", icon: Map },
   { name: "Govt Schemes", href: "/patient/schemes", icon: ShieldPlus },
   { name: "Settings", href: "/patient/settings", icon: Settings },
+];
+
+const ashaNavItems = [
+  { name: "ASHA Workspace", href: "/asha/dashboard", icon: UserCheck },
+  { name: "Triage & Vitals", href: "/asha/dashboard#triage", icon: HeartPulse },
+  { name: "Medicine Inventory", href: "/asha/dashboard#inventory", icon: Pill },
+  { name: "Village Queue", href: "/asha/dashboard#queue", icon: Calendar },
+  { name: "Hospital Network", href: "/explore", icon: Map },
+];
+
+const doctorNavItems = [
+  { name: "Doctor Workspace", href: "/doctor/dashboard", icon: Stethoscope },
+  { name: "OPD Patient Queue", href: "/doctor/dashboard", icon: Users },
+  { name: "Find Facilities", href: "/explore", icon: Map },
+];
+
+const adminNavItems = [
+  { name: "Admin Command", href: "/admin/dashboard", icon: Building2 },
+  { name: "Staff Directory", href: "/admin/dashboard#staff", icon: Users },
+  { name: "Medicine Stock", href: "/admin/dashboard#stock", icon: Pill },
+  { name: "Facility Map", href: "/explore", icon: Map },
 ];
 
 export function Sidebar() {
@@ -40,8 +66,26 @@ export function Sidebar() {
   const isAsha = pathname.startsWith("/asha");
   const isAdmin = pathname.startsWith("/admin");
 
-  const userName = session?.user?.name || (isDoctor ? "Dr. Ramesh Sharma" : isAsha ? "Sunita Devi" : isAdmin ? "Vikram Malhotra" : "Rahul Kumar");
-  const userRole = (session?.user as any)?.role || (isDoctor ? "DOCTOR" : isAsha ? "ASHA" : isAdmin ? "ADMIN" : "PATIENT");
+  const userName =
+    session?.user?.name ||
+    (isDoctor
+      ? "Dr. Ramesh Sharma"
+      : isAsha
+      ? "Sunita Devi"
+      : isAdmin
+      ? "Hospital Administrator"
+      : "Rahul Kumar");
+  const userRole =
+    (session?.user as any)?.role ||
+    (isDoctor ? "DOCTOR" : isAsha ? "ASHA" : isAdmin ? "ADMIN" : "PATIENT");
+
+  const currentNavItems = isAdmin
+    ? adminNavItems
+    : isAsha
+    ? ashaNavItems
+    : isDoctor
+    ? doctorNavItems
+    : patientNavItems;
 
   const portalSwitchers = [
     { label: "Patient", href: "/patient/dashboard", icon: Home, active: !isDoctor && !isAsha && !isAdmin },
@@ -49,6 +93,13 @@ export function Sidebar() {
     { label: "ASHA", href: "/asha/dashboard", icon: UserCheck, active: isAsha },
     { label: "Admin", href: "/admin/dashboard", icon: Building2, active: isAdmin },
   ];
+
+  const handleLogout = async () => {
+    // Clear cookies
+    document.cookie = "demo_role=; path=/; max-age=0";
+    document.cookie = "user_role=; path=/; max-age=0";
+    await signOut({ callbackUrl: "/login" });
+  };
 
   const sidebarContent = (
     <div className="flex flex-col h-full justify-between p-4 sm:p-5">
@@ -102,9 +153,9 @@ export function Sidebar() {
           <div className="text-[10px] uppercase tracking-wider text-slate-400 font-bold px-3 py-1">
             Navigation
           </div>
-          {patientNavItems.map((item) => {
+          {currentNavItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href.split("#")[0];
             const isHovered = hoveredNav === item.name;
 
             return (
@@ -158,22 +209,18 @@ export function Sidebar() {
             {userName.charAt(0)}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-white truncate">{userName}</p>
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
-                {userRole}
-              </p>
+            <div className="text-xs font-semibold text-white truncate">
+              {userName}
+            </div>
+            <div className="text-[10px] font-medium text-emerald-400 uppercase tracking-wider truncate">
+              {userRole}
             </div>
           </div>
         </div>
 
         <button
-          onClick={() => {
-            document.cookie = "demo_role=; path=/; max-age=0";
-            signOut({ callbackUrl: "/login" });
-          }}
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-all"
         >
           <LogOut className="w-3.5 h-3.5" />
           <span>Sign Out</span>
@@ -184,22 +231,24 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Desktop Sidebar (Fixed Left) */}
-      <aside className="hidden lg:flex flex-col w-64 h-screen sticky top-0 border-r border-white/10 glass-panel backdrop-blur-2xl z-40">
+      {/* Desktop Persistent Sidebar */}
+      <aside className="hidden lg:flex w-64 h-screen flex-col fixed left-0 top-0 bottom-0 bg-[#0c121e]/90 backdrop-blur-2xl border-r border-white/10 z-40">
         {sidebarContent}
       </aside>
 
-      {/* Mobile Top Navbar Bar with Drawer Toggle */}
-      <div className="lg:hidden flex items-center justify-between p-4 border-b border-white/10 glass-nav sticky top-0 z-40">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white">
-            <Activity className="w-4 h-4" />
+      {/* Mobile Header Toggle */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#0c121e]/90 backdrop-blur-xl border-b border-white/10 px-4 flex items-center justify-between z-40">
+        <Link href="/" className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center">
+            <Activity className="w-4 h-4 text-slate-950" />
           </div>
-          <span className="font-bold text-white text-base">SwasthyaSetu</span>
+          <span className="font-bold text-white text-base">
+            Swasthya<span className="text-emerald-400">Setu</span>
+          </span>
         </Link>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="p-2 rounded-xl bg-white/5 text-slate-300 hover:text-white border border-white/10"
+          className="p-2 rounded-xl bg-white/5 border border-white/10 text-white"
         >
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
@@ -207,16 +256,12 @@ export function Sidebar() {
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-md">
-          <div className="w-72 h-full bg-[#0f172a] border-r border-white/10 p-2">
-            <div className="flex justify-end p-2">
-              <button
-                onClick={() => setMobileOpen(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+        <div className="lg:hidden fixed inset-0 z-50 flex">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div className="relative w-72 h-full bg-[#0c121e] border-r border-white/10 z-10">
             {sidebarContent}
           </div>
         </div>
