@@ -6,7 +6,7 @@ echo ==========================================
 set "PATH=C:\Program Files\Git\cmd;C:\Program Files\Git\bin;%PATH%"
 
 git add .
-git commit -m "Fix: Perfectly center Modal in screen viewport with dedicated internal scrolling to always show submit button"
+git commit -m "feat: complete SwasthyaSetu Universal Healthcare platform with Next.js 14, WebGL, AI Triage, and Render deployment"
 git push origin main
 
 if errorlevel 1 (

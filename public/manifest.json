@@ -1,0 +1,24 @@
+{
+  "name": "SwasthyaSetu Universal Healthcare",
+  "short_name": "SwasthyaSetu",
+  "description": "Unified AI-powered healthcare ecosystem bridging rural and urban patients, ASHA workers, and doctors.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0f17",
+  "theme_color": "#0b0f17",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://unpkg.com/lucide-static@0.453.0/icons/activity.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://unpkg.com/lucide-static@0.453.0/icons/activity.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,10 +1,15 @@
 services:
   - type: web
     name: swasthya-setu
-    env: static
-    buildCommand: npm run build
-    staticPublishPath: ./dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NEXTAUTH_URL
+        value: https://swasthya-setu.onrender.com
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+
