@@ -1,15 +1,16 @@
 services:
   - type: web
     name: swasthya-setu
-    env: node
+    runtime: node
     plan: free
     buildCommand: npm install && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_VERSION
-        value: 20
+        value: "20"
       - key: NEXTAUTH_URL
         value: https://swasthya-setu.onrender.com
       - key: NEXTAUTH_SECRET
         generateValue: true
-
+      - key: GEMINI_API_KEY
+        sync: false
